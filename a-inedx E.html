@@ -1,0 +1,3526 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Automating Daily Tasks with n8n - Research Plan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #2ecc71;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --warning: #e74c3c;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --n8n-color: #13c9ca;
+            --openai: #10a37f;
+            --ai-agent: #8e44ad;
+            --github: #333;
+            --slack: #4a154b;
+            --notion: #000;
+            --postgres: #336791;
+            --mongodb: #47a248;
+            --redis: #d82c20;
+            --docker: #2496ed;
+            --whatsapp: #25D366;
+            --twitter: #1DA1F2;
+            --linkedin: #0077b5;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 25px 15px;
+            background: var(--light);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation-delay: 0.5s;
+        }
+        
+        .container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: slideInScale 1s ease-out 0.5s both;
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--secondary);
+            animation: fadeInDown 1s ease-out 1s both;
+        }
+        
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleGlow 4s ease-in-out infinite 4s;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+            }
+        }
+        
+        .slide-subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            animation: fadeInRight 1s ease-out 1.2s both;
+        }
+        
+        @keyframes fadeInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .slide-number {
+            background: var(--gradient);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            animation: pulseNumber 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes pulseNumber {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .content {
+            margin-top: 15px;
+            animation: contentAppear 1s ease-out 1.5s both;
+        }
+        
+        @keyframes contentAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin: 20px 0 12px;
+            font-size: 1.4rem;
+            border-left: 4px solid var(--secondary);
+            padding-left: 12px;
+            animation: slideInLeft 0.8s ease-out 2s both;
+        }
+        
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 15px 0 8px;
+            font-size: 1.2rem;
+            animation: fadeInUp 0.8s ease-out 2.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: var(--dark);
+            animation: fadeIn 1s ease-out 2.4s both;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 18px;
+            animation: fadeIn 1s ease-out 2.6s both;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            padding-left: 8px;
+            position: relative;
+            font-size: 0.95rem;
+            animation: slideInListItem 0.5s ease-out forwards;
+            opacity: 0;
+            color: var(--dark);
+            list-style: none;
+        }
+        
+        li:nth-child(1) { animation-delay: 2.8s; }
+        li:nth-child(2) { animation-delay: 3.0s; }
+        li:nth-child(3) { animation-delay: 3.2s; }
+        li:nth-child(4) { animation-delay: 3.4s; }
+        li:nth-child(5) { animation-delay: 3.6s; }
+        li:nth-child(6) { animation-delay: 3.8s; }
+        
+        @keyframes slideInListItem {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        li:before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            margin-right: 8px;
+            position: absolute;
+            left: -12px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--light);
+            animation: cardAppear 0.8s ease-out 3s both;
+            transform-origin: center;
+        }
+        
+        @keyframes cardAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
+            border-left-color: var(--accent);
+            animation: cardHoverPulse 2s infinite 4s;
+        }
+        
+        @keyframes cardHoverPulse {
+            0%, 100% {
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
+            }
+            50% {
+                box-shadow: 0 20px 40px rgba(52, 152, 219, 0.25);
+            }
+        }
+        
+        .card-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInLeft 0.8s ease-out 3.2s both;
+        }
+        
+        .card-title i {
+            color: var(--secondary);
+            animation: iconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+            animation: gridAppear 1s ease-out 3.4s both;
+        }
+        
+        @keyframes gridAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 25px 0;
+            gap: 15px;
+            animation: statsAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes statsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+            text-align: center;
+            border: 1px solid var(--light);
+            transition: all 0.4s ease;
+            animation: statPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes statPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+            }
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            animation: numberCount 2s ease-out 4s both;
+        }
+        
+        @keyframes numberCount {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease-out 4.2s both;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            animation: tableAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes tableAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        th {
+            background: var(--gradient);
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: tableHeaderSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes tableHeaderSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-size: 0.9rem;
+            animation: tableRowAppear 0.5s ease-out forwards;
+            opacity: 0;
+            color: var(--dark);
+        }
+        
+        tr:nth-child(1) td { animation-delay: 4.2s; }
+        tr:nth-child(2) td { animation-delay: 4.4s; }
+        tr:nth-child(3) td { animation-delay: 4.6s; }
+        tr:nth-child(4) td { animation-delay: 4.8s; }
+        tr:nth-child(5) td { animation-delay: 5.0s; }
+        
+        @keyframes tableRowAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        tr:hover {
+            background-color: var(--light);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        
+        .highlight {
+            background: var(--light);
+            padding: 18px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent);
+            font-size: 0.95rem;
+            animation: highlightPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes highlightPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(46, 204, 113, 0.1);
+            }
+            50% {
+                transform: scale(1.01);
+                box-shadow: 0 8px 20px rgba(46, 204, 113, 0.15);
+            }
+        }
+        
+        .researcher-info {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: researcherInfoAppear 1s ease-out 1s both;
+            transform-origin: center;
+        }
+        
+        @keyframes researcherInfoAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .researcher-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            animation: nameGlow 3s infinite 4s;
+        }
+        
+        @keyframes nameGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+        }
+        
+        .research-purpose {
+            font-size: 1rem;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 1.2s both;
+        }
+        
+        .degree-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff9c4, #ffecb3);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            animation: badgeBounce 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        @keyframes badgeBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+            animation: controlsAppear 1s ease-out 2s both;
+        }
+        
+        @keyframes controlsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            animation: buttonPulse 2s infinite 4s;
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-dots {
+            position: fixed;
+            bottom: 25px;
+            right: 50%;
+            transform: translateX(50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            animation: dotsAppear 1s ease-out 2.2s both;
+        }
+        
+        @keyframes dotsAppear {
+            0% {
+                opacity: 0;
+                transform: translateX(50%) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(50%) translateY(0);
+            }
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: dotPulse 2s infinite 4s;
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        
+        .dot.active {
+            background: var(--gradient);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+            animation: activeDotGlow 2s infinite 4s;
+        }
+        
+        @keyframes activeDotGlow {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(102, 126, 234, 0.8);
+            }
+        }
+        
+        .logo {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            animation: logoSlide 1s ease-out 1s both;
+        }
+        
+        @keyframes logoSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .logo i {
+            margin-right: 8px;
+            color: var(--n8n-color);
+            animation: logoSpin 4s linear infinite 4s;
+        }
+        
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--secondary);
+            animation: tagAppear 0.5s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .tag:nth-child(1) { animation-delay: 4s; }
+        .tag:nth-child(2) { animation-delay: 4.2s; }
+        .tag:nth-child(3) { animation-delay: 4.4s; }
+        
+        @keyframes tagAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        .kpi {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            padding: 8px 15px;
+            border-radius: 25px;
+            margin: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: 1px solid var(--secondary);
+            animation: kpiAppear 0.6s ease-out 4s both;
+            transform-origin: center;
+            color: var(--dark);
+        }
+        
+        @keyframes kpiAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .kpi i {
+            color: var(--secondary);
+            margin-right: 8px;
+            animation: kpiIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes kpiIconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .challenge-solution {
+            display: flex;
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            animation: challengeAppear 1s ease-out 3.5s both;
+        }
+        
+        @keyframes challengeAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .challenge {
+            flex: 1;
+            background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+            padding: 15px;
+            border-right: 1px solid #e6b0aa;
+            animation: challengeSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes challengeSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .solution {
+            flex: 1;
+            background: linear-gradient(135deg, #d4efdf, #a9dfbf);
+            padding: 15px;
+            animation: solutionSlide 0.8s ease-out 4.2s both;
+        }
+        
+        @keyframes solutionSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .timeline-bar {
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin: 25px 0;
+            position: relative;
+            animation: timelineAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes timelineAppear {
+            0% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+        }
+        
+        .timeline-phase {
+            height: 100%;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            background: var(--gradient);
+            animation: phaseExpand 1s ease-out 4s both;
+            transform-origin: left;
+        }
+        
+        @keyframes phaseExpand {
+            0% {
+                transform: scaleX(0);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+        
+        .phase-label {
+            position: absolute;
+            top: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--secondary);
+            animation: phaseLabelAppear 0.8s ease-out 4.5s both;
+        }
+        
+        @keyframes phaseLabelAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-demo {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary);
+            animation: projectDemoAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes projectDemoAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) rotateX(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            animation: projectHeaderAppear 0.8s ease-out 4s both;
+        }
+        
+        @keyframes projectHeaderAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: projectTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes projectTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .project-badge {
+            background: var(--gradient);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            animation: badgePulse 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .workflow-simulator {
+            background: var(--gradient);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: simulatorAppear 1s ease-out 3.5s both;
+            transform-origin: center;
+        }
+        
+        @keyframes simulatorAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0);
+            }
+        }
+        
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(52, 152, 219, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-left: 4px solid var(--accent);
+            color: white;
+            animation: workflowHeaderSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes workflowHeaderSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .workflow-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: workflowTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes workflowTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            }
+        }
+        
+        .workflow-title i {
+            color: var(--accent);
+            animation: workflowIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes workflowIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .workflow-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a9dfbf;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: statusPulse 2s infinite 4s;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        .workflow-canvas {
+            min-height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            animation: canvasAppear 1s ease-out 4.2s both;
+        }
+        
+        @keyframes canvasAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .node-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+            position: relative;
+            animation: nodeLineAppear 1s ease-out 4.4s both;
+        }
+        
+        @keyframes nodeLineAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .n8n-node {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 130px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            cursor: pointer;
+            animation: nodeAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .n8n-node:nth-child(1) { animation-delay: 4.6s; }
+        .n8n-node:nth-child(2) { animation-delay: 4.8s; }
+        .n8n-node:nth-child(3) { animation-delay: 5.0s; }
+        .n8n-node:nth-child(4) { animation-delay: 5.2s; }
+        .n8n-node:nth-child(5) { animation-delay: 5.4s; }
+        
+        @keyframes nodeAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        .n8n-node:hover {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border-color: var(--accent);
+            z-index: 10;
+            animation: nodeHoverPulse 2s infinite 4s;
+        }
+        
+        @keyframes nodeHoverPulse {
+            0%, 100% {
+                box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            }
+            50% {
+                box-shadow: 0 20px 45px rgba(46, 204, 113, 0.6);
+            }
+        }
+        
+        .node-icon {
+            font-size: 2rem;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            background: rgba(255,255,255,0.1);
+            animation: iconFloat 3s ease-in-out infinite 4s;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .node-name {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            animation: nodeNameGlow 3s infinite 4s;
+        }
+        
+        @keyframes nodeNameGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+        }
+        
+        .node-description {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            animation: descriptionPulse 2s infinite 4s;
+        }
+        
+        @keyframes descriptionPulse {
+            0%, 100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+        
+        .connection-line {
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            flex-grow: 1;
+            max-width: 40px;
+            position: relative;
+            margin: 0 3px;
+            animation: connectionFlow 2s infinite 4s;
+        }
+        
+        @keyframes connectionFlow {
+            0% {
+                background: linear-gradient(90deg, var(--secondary), var(--accent));
+                transform: scaleX(1);
+            }
+            50% {
+                background: linear-gradient(90deg, var(--accent), var(--secondary));
+                transform: scaleX(1.1);
+            }
+            100% {
+                background: linear-gradient(90deg, var(--secondary), var(--accent));
+                transform: scaleX(1);
+            }
+        }
+        
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: dotPulse 2s infinite 4s;
+        }
+        
+        .connection-line::after {
+            content: '→';
+            position: absolute;
+            top: -12px;
+            left: -5px;
+            color: var(--accent);
+            font-size: 1.2rem;
+            animation: arrowMove 2s infinite 4s;
+        }
+        
+        @keyframes arrowMove {
+            0%, 100% {
+                left: -5px;
+                opacity: 0.8;
+            }
+            50% {
+                left: 5px;
+                opacity: 1;
+            }
+        }
+        
+        .workflow-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            animation: statsGridAppear 1s ease-out 5.6s both;
+        }
+        
+        @keyframes statsGridAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-item {
+            text-align: center;
+            color: white;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            animation: statItemPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes statItemPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            }
+        }
+        
+        .data-flow {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: dataFlow 3s infinite linear 4s;
+            z-index: 1;
+        }
+        
+        @keyframes dataFlow {
+            0% { transform: translateX(100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(calc(-100vw + 100px)); opacity: 0; }
+        }
+        
+        .tools-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            animation: toolsShowcaseAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes toolsShowcaseAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid var(--light);
+            animation: toolCardAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .tool-card:nth-child(1) { animation-delay: 4s; }
+        .tool-card:nth-child(2) { animation-delay: 4.1s; }
+        .tool-card:nth-child(3) { animation-delay: 4.2s; }
+        .tool-card:nth-child(4) { animation-delay: 4.3s; }
+        .tool-card:nth-child(5) { animation-delay: 4.4s; }
+        .tool-card:nth-child(6) { animation-delay: 4.5s; }
+        .tool-card:nth-child(7) { animation-delay: 4.6s; }
+        .tool-card:nth-child(8) { animation-delay: 4.7s; }
+        .tool-card:nth-child(9) { animation-delay: 4.8s; }
+        .tool-card:nth-child(10) { animation-delay: 4.9s; }
+        .tool-card:nth-child(11) { animation-delay: 5.0s; }
+        .tool-card:nth-child(12) { animation-delay: 5.1s; }
+        
+        @keyframes toolCardAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotateY(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0);
+            }
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            border-color: var(--secondary);
+            animation: toolCardHover 2s infinite 4s;
+        }
+        
+        @keyframes toolCardHover {
+            0%, 100% {
+                transform: translateY(-8px) scale(1.1);
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            }
+            50% {
+                transform: translateY(-12px) scale(1.15);
+                box-shadow: 0 20px 40px rgba(52, 152, 219, 0.3);
+            }
+        }
+        
+        .tool-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            animation: toolIconFloat 3s ease-in-out infinite 4s;
+        }
+        
+        @keyframes toolIconFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0);
+            }
+            50% {
+                transform: translateY(-5px) rotate(5deg);
+            }
+        }
+        
+        .tool-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            animation: toolNameGlow 3s infinite 4s;
+        }
+        
+        @keyframes toolNameGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .tool-description {
+            color: var(--dark);
+            font-size: 0.75rem;
+            line-height: 1.3;
+            animation: fadeIn 1s ease-out 5s both;
+        }
+        
+        .system-overview {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary);
+            animation: systemOverviewAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes systemOverviewAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 18px 0;
+            animation: integrationGridAppear 1s ease-out 4s both;
+        }
+        
+        @keyframes integrationGridAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .integration-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+            animation: integrationItemAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .integration-item:nth-child(1) { animation-delay: 4.2s; }
+        .integration-item:nth-child(2) { animation-delay: 4.4s; }
+        .integration-item:nth-child(3) { animation-delay: 4.6s; }
+        
+        @keyframes integrationItemAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .integration-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
+            border-left-color: var(--accent);
+            animation: integrationItemHover 2s infinite 4s;
+        }
+        
+        @keyframes integrationItemHover {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.08);
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            }
+        }
+        
+        .integration-icon {
+            font-size: 1.6rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            animation: integrationIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes integrationIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(-10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        
+        .integration-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            animation: integrationTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes integrationTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .integration-desc {
+            color: var(--dark);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            animation: fadeIn 1s ease-out 4.5s both;
+        }
+        
+        .live-demo {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            animation: liveDemoAppear 1s ease-out 4.2s both;
+        }
+        
+        @keyframes liveDemoAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) rotateX(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+        
+        .demo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0;
+            animation: demoControlsAppear 0.8s ease-out 4.4s both;
+        }
+        
+        @keyframes demoControlsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .demo-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.85rem;
+            animation: demoBtnPulse 2s infinite 4s;
+        }
+        
+        @keyframes demoBtnPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(255,255,255,0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(255,255,255,0.3);
+            }
+        }
+        
+        .demo-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.3);
+        }
+        
+        .demo-output {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 80px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            animation: demoOutputAppear 0.8s ease-out 4.6s both;
+        }
+        
+        .linkedin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--linkedin);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            text-decoration: none;
+            animation: linkedinBtnAppear 1s ease-out 1.5s both;
+        }
+        
+        @keyframes linkedinBtnAppear {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) rotate(0);
+            }
+        }
+        
+        .linkedin-btn:hover {
+            background: #005582;
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 119, 181, 0.4);
+            animation: linkedinBtnHover 2s infinite 4s;
+        }
+        
+        @keyframes linkedinBtnHover {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.1);
+                box-shadow: 0 10px 30px rgba(0, 119, 181, 0.4);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.15);
+                box-shadow: 0 15px 40px rgba(0, 119, 181, 0.5);
+            }
+        }
+        
+        .linkedin-btn i {
+            transition: transform 0.3s;
+            animation: linkedinIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes linkedinIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(-10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        
+        #slide-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--gradient);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.3s ease;
+            animation: progressPulse 3s infinite 4s;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+            }
+        }
+        
+        .scale-in {
+            animation: cardAppear 0.8s ease-out 3s both;
+        }
+        
+        .animation-delay-4s {
+            animation-delay: 4s !important;
+        }
+        
+        .scale-pulse {
+            animation: statPulse 3s infinite 4s;
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: elementAppear 1s ease-out 4s both;
+        }
+        
+        @keyframes elementAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .slide-title {
+                font-size: 1.4rem;
+            }
+            
+            .slide-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .stat {
+                min-width: 120px;
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            
+            .challenge-solution {
+                flex-direction: column;
+            }
+            
+            .challenge {
+                border-right: none;
+                border-bottom: 1px solid #e6b0aa;
+            }
+            
+            .controls {
+                left: 15px;
+                bottom: 15px;
+            }
+            
+            .btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .nav-dots {
+                bottom: 20px;
+            }
+            
+            .tools-showcase {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
+            
+            .workflow-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .n8n-node {
+                min-width: 110px;
+                padding: 12px;
+            }
+            
+            .node-icon {
+                font-size: 1.6rem;
+                height: 40px;
+                width: 40px;
+            }
+            
+            .linkedin-btn {
+                right: 15px;
+                bottom: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .logo {
+                top: 10px;
+                left: 10px;
+                font-size: 0.9rem;
+                padding: 5px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .slide-title {
+                font-size: 1.2rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .tools-showcase {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            
+            .tool-card {
+                padding: 10px 5px;
+            }
+            
+            .tool-icon {
+                font-size: 1.5rem;
+                height: 35px;
+                width: 35px;
+            }
+        }
+
+        .tool-icon.n8n { color: var(--n8n-color); }
+        .tool-icon.openai { color: var(--openai); }
+        .tool-icon.ai-agent { color: var(--ai-agent); }
+        .tool-icon.github { color: var(--github); }
+        .tool-icon.slack { color: var(--slack); }
+        .tool-icon.notion { color: var(--notion); }
+        .tool-icon.postgres { color: var(--postgres); }
+        .tool-icon.mongodb { color: var(--mongodb); }
+        .tool-icon.redis { color: var(--redis); }
+        .tool-icon.docker { color: var(--docker); }
+        .tool-icon.whatsapp { color: var(--whatsapp); }
+        .tool-icon.twitter { color: var(--twitter); }
+    </style>
+</head>
+<body>
+    <!-- Language button -->
+    <a href="INDEX A.html" class="linkedin-btn" onclick="switchToArabic()">
+        <i class="fas fa-language"></i>
+    </a>
+    
+    <!-- Navigation buttons -->
+    <div class="controls">
+        <button class="btn" id="prevBtn">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="btn" id="nextBtn">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+    
+    <!-- Navigation dots -->
+    <div class="nav-dots" id="navDots"></div>
+    
+    <!-- Progress bar -->
+    <div id="slide-progress"></div>
+    
+    <!-- Logo -->
+    <div class="logo">
+        <i class="fas fa-robot"></i> n8n Research
+    </div>
+    
+    <!-- Slide 1: Title -->
+    <div class="container active" id="slide1">
+        <div class="researcher-info">
+            <div class="researcher-name">Studant : Yousif ELtjani Mohammed Omar</div>
+            <div class="research-purpose">Research Plan </div>
+            <div class="degree-badge">Automation System for Daily Task Processing </div>
+        </div>
+        
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Developing an Intelligent Automation System for Daily Task Processing</h1>
+                <p class="slide-subtitle">Using the n8n Platform: An Applied Study</p>
+            </div>
+            <div class="slide-number">1</div>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 15px;" class="scale-pulse">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h2 class="animation-delay-4s">Research Presentation</h2>
+                <p style="font-size: 1.1rem; margin-top: 10px; color: var(--dark);" class="animation-delay-4s">
+                    Enhancing Productivity Through Workflow Automation
+                </p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">30-50%</div>
+                    <div class="stat-label">Productivity Improvement</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">60-80%</div>
+                    <div class="stat-label">Error Reduction</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">15-25</div>
+                    <div class="stat-label">Hours Saved Weekly</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px;" class="animation-delay-4s">
+                <p style="font-style: italic; color: var(--secondary); font-size: 1rem;">
+                    "Automation is not about replacing humans, but enhancing human capabilities"
+                </p>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <p style="text-align: center; font-weight: 600; color: var(--primary); font-size: 0.95rem;">
+                    Research  Plan presentation for Master's degree in Information Technology <br>
+                    Under the supervision of : D . Adam
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 2: Research Problem and Importance -->
+    <div class="container" id="slide2">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Research Problem and Importance</h1>
+                <p class="slide-subtitle">Addressing Productivity Challenges</p>
+            </div>
+            <div class="slide-number">2</div>
+        </div>
+        
+        <div class="content">
+            <div class="card scale-in">
+                <div class="card-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Research Problem
+                </div>
+                <p>Organizations and individuals face challenges in managing repetitive daily tasks that consume significant time and effort, negatively impacting productivity and efficiency.</p>
+                <ul>
+                    <li>Time-consuming manual processes</li>
+                    <li>Increased human errors in repetitive tasks</li>
+                    <li>High operational costs</li>
+                    <li>Limited scalability of manual processes</li>
+                    <li>Employee burnout from monotonous work</li>
+                </ul>
+            </div>
+            
+            <h2 class="animation-delay-4s">Research Importance</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> Efficiency Improvement</div>
+                    <p>Reducing manual intervention and streamlining processes, allowing focus on high-value tasks.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-dollar-sign"></i> Cost Reduction</div>
+                    <p>Reducing expenses associated with repetitive manual tasks and error correction, improving ROI.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-code-branch"></i> Open Source Solutions</div>
+                    <p>Providing customizable automation without high cost using the n8n platform, eliminating vendor lock-in.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-link"></i> System Integration</div>
+                    <p>Enhancing connections between different applications and platforms, creating unified workflows.</p>
+                </div>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <p style="text-align: center; font-weight: 600; color: var(--primary);">
+                    This research contributes to the field of workflow automation by providing<br>
+                    an applied framework using open-source technology for academic and industrial applications
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 3: Research Objectives -->
+    <div class="container" id="slide3">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Research Objectives</h1>
+                <p class="slide-subtitle">Goals of the Applied Study</p>
+            </div>
+            <div class="slide-number">3</div>
+        </div>
+        
+        <div class="content">
+            <div class="highlight scale-pulse" style="background: var(--gradient); color: white;">
+                <p style="font-style: italic; text-align: center; font-size: 1rem;">
+                    "To develop and evaluate an applied framework for automating daily tasks using n8n,<br>
+                    contributing to academic knowledge and practical application"
+                </p>
+            </div>
+            
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">1. Platform Analysis</div>
+                    <p>Studying the capabilities of the n8n platform in automating daily tasks across various fields and industries.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Technical Assessment</span>
+                        <span class="tag">Feature Analysis</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">2. Practical Application</div>
+                    <p>Designing and implementing practical automation scenarios for real-world applications with measurable results.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Workflow Design</span>
+                        <span class="tag">Scenario Development</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">3. Impact Measurement</div>
+                    <p>Measuring the impact of automation on productivity, efficiency, error rates, and operational costs.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">KPI Analysis</span>
+                        <span class="tag">Performance Metrics</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">4. Framework Development</div>
+                    <p>Creating reusable frameworks for different organizational environments and sectors.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Template Creation</span>
+                        <span class="tag">Best Practices</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">5. Academic Contribution</div>
+                    <p>Providing documented case studies and methodologies for academic reference and future research.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Case Study</span>
+                        <span class="tag">Research Documentation</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card scale-in" style="margin-top: 20px;">
+                <div class="card-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    Academic Significance
+                </div>
+                <p>This research bridges the gap between theoretical automation concepts and practical application, providing empirical data and methodologies that contribute to the academic body of knowledge in workflow automation and business process improvement.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 4: Theoretical Framework -->
+    <div class="container" id="slide4">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Theoretical Framework</h1>
+                <p class="slide-subtitle">Core Concepts and Previous Studies</p>
+            </div>
+            <div class="slide-number">4</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">Core Concepts</h2>
+            
+            <h3 class="animation-delay-4s">Workflow Automation</h3>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">Full Automation</div>
+                    <p>Complete transfer of tasks to automated systems without human intervention, suitable for rule-based processes.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">Partial Automation</div>
+                    <p>Collaboration between humans and machines where specific steps are automated, while maintaining human oversight when needed.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">Intelligent Automation</div>
+                    <p>Integrating AI and machine learning for decision-making within automated workflows, enabling adaptive responses.</p>
+                </div>
+            </div>
+            
+            <h3 class="animation-delay-4s">n8n Platform</h3>
+            <p class="animation-delay-4s"><strong>Overview:</strong> n8n is an open-source, node-based workflow automation tool that enables visual creation of complex automation scenarios with extensive integration capabilities.</p>
+            
+            <div class="highlight scale-pulse">
+                <h3 style="margin-top: 0;" class="animation-delay-4s">Comparison with Other Platforms</h3>
+                <table>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Type</th>
+                        <th>Key Feature</th>
+                        <th>Cost Model</th>
+                    </tr>
+                    <tr>
+                        <td><strong>n8n</strong></td>
+                        <td>Open Source</td>
+                        <td>Self-hosted, unlimited workflows</td>
+                        <td>Free / Enterprise</td>
+                    </tr>
+                    <tr>
+                        <td>Zapier</td>
+                        <td>SaaS</td>
+                        <td>Ease of use, large app library</td>
+                        <td>Tiered subscription</td>
+                    </tr>
+                    <tr>
+                        <td>Make (Integromat)</td>
+                        <td>SaaS</td>
+                        <td>Visual scenarios, data transformation</td>
+                        <td>Tiered subscription</td>
+                    </tr>
+                    <tr>
+                        <td>Power Automate</td>
+                        <td>SaaS/On-prem</td>
+                        <td>Microsoft integration, RPA capabilities</td>
+                        <td>Subscription</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="card scale-in" style="margin-top: 20px;">
+                <div class="card-title">
+                    <i class="fas fa-book-open"></i>
+                    Academic Foundation
+                </div>
+                <p>This research builds on established theories in business process management, automation economics, and human-computer interaction, applying them to modern open-source automation platforms.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 5: Research Methodology -->
+    <div class="container" id="slide5">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Research Methodology</h1>
+                <p class="slide-subtitle">Applied Study with Mixed Methods</p>
+            </div>
+            <div class="slide-number">5</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">Research Type</div>
+                    <p>Applied study with mixed methods combining qualitative and quantitative approaches:</p>
+                    <ul>
+                        <li>Descriptive analytical research</li>
+                        <li>Case study methodology</li>
+                        <li>Practical experimentation</li>
+                        <li>Action research elements</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Research Population and Sample</div>
+                    <p>Target groups for research application:</p>
+                    <ul>
+                        <li>Small and medium enterprises (SMEs)</li>
+                        <li>Technical and administrative teams</li>
+                        <li>Individual productivity tool users</li>
+                        <li>Educational institutions</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">Data Collection Tools</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-clipboard-list"></i> Surveys</div>
+                    <p>To measure satisfaction and productivity levels before and after application using validated scales.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-comments"></i> Interviews</div>
+                    <p>With users and managers to gather qualitative feedback and insights on automation impact.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-bar"></i> Technical Measurements</div>
+                    <p>Execution time, error rate, number of tasks automated, with precise tracking.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-file-alt"></i> Document Analysis</div>
+                    <p>System logs and dashboards to track performance and identify patterns.</p>
+                </div>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <h3 style="margin-top: 0;" class="animation-delay-4s">Research Validity and Reliability</h3>
+                <p class="animation-delay-4s">To ensure academic rigor, the research uses triangulation of data sources, pilot testing of instruments, and statistical validation of results using appropriate statistical software.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 6: Implementation Steps -->
+    <div class="container" id="slide6">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Implementation Steps</h1>
+                <p class="slide-subtitle">Five-Phase Research Methodology</p>
+            </div>
+            <div class="slide-number">6</div>
+        </div>
+        
+        <div class="content">
+            <div class="timeline-bar">
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; left: 0;">
+                    <div class="phase-label" style="left: 5%;">Phase 1<br>Analysis</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; left: 16%;">
+                    <div class="phase-label" style="left: 21%;">Phase 2<br>Design</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 30%; left: 32%;">
+                    <div class="phase-label" style="left: 42%;">Phase 3<br>Development</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 20%; left: 63%;">
+                    <div class="phase-label" style="left: 68%;">Phase 4<br>Evaluation</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; left: 84%;">
+                    <div class="phase-label" style="left: 89%;">Phase 5<br>Documentation</div>
+                </div>
+            </div>
+            
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">Phase 1: Analysis & Planning</div>
+                    <ul>
+                        <li>Identify daily tasks suitable for automation</li>
+                        <li>Analyze user needs and requirements</li>
+                        <li>Map current workflows and processes</li>
+                        <li>Define system requirements and constraints</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Phase 2: Design & Setup</div>
+                    <ul>
+                        <li>Install and configure n8n environment</li>
+                        <li>Design basic workflow and automation logic</li>
+                        <li>Configure required integrations and connections</li>
+                        <li>Create database structure and variables</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Phase 3: Development & Execution</div>
+                    <ul>
+                        <li>Build practical automation scenarios</li>
+                        <li>Test individual components and modules</li>
+                        <li>Handle errors and exceptions</li>
+                        <li>Optimize performance and reliability</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Phase 4: Testing & Evaluation</div>
+                    <ul>
+                        <li>Conduct limited pilot implementation</li>
+                        <li>Collect data and user feedback</li>
+                        <li>Analyze results against KPIs</li>
+                        <li>Apply necessary adjustments and improvements</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Phase 5: Documentation & Recommendations</div>
+                    <ul>
+                        <li>Write final research reports</li>
+                        <li>Prepare comprehensive user guide</li>
+                        <li>Document best practices and lessons learned</li>
+                        <li>Provide implementation recommendations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 7: Practical Automation Scenarios -->
+    <div class="container" id="slide7">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Practical Automation Scenarios</h1>
+                <p class="slide-subtitle">Real-World Application Examples</p>
+            </div>
+            <div class="slide-number">7</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-envelope"></i> Email Management Automation</div>
+                    <ul>
+                        <li>Automatically classify and filter emails</li>
+                        <li>Auto-reply to specific inquiries</li>
+                        <li>Archive attachments to cloud storage</li>
+                        <li>Send alerts for important messages</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Gmail</span>
+                        <span class="tag">Outlook</span>
+                        <span class="tag">Google Drive</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-project-diagram"></i> Project Management Automation</div>
+                    <ul>
+                        <li>Create new tasks from forms or emails</li>
+                        <li>Automatically update task statuses</li>
+                        <li>Send periodic progress reports</li>
+                        <li>Notify team about deadlines</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Trello</span>
+                        <span class="tag">Asana</span>
+                        <span class="tag">Jira</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-bullhorn"></i> Content & Marketing Automation</div>
+                    <ul>
+                        <li>Schedule and publish content across platforms</li>
+                        <li>Collect and analyze social media data</li>
+                        <li>Send personalized marketing messages</li>
+                        <li>Generate automatic performance reports</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Twitter</span>
+                        <span class="tag">Facebook</span>
+                        <span class="tag">LinkedIn</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-pie"></i> Financial Process Automation</div>
+                    <ul>
+                        <li>Track expenses and invoices</li>
+                        <li>Generate periodic financial reports</li>
+                        <li>Send payment due reminders</li>
+                        <li>Sync data with accounting systems</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">QuickBooks</span>
+                        <span class="tag">Excel</span>
+                        <span class="tag">Google Sheets</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-users"></i> HR Process Automation</div>
+                    <ul>
+                        <li>Process leave requests</li>
+                        <li>Send employee satisfaction surveys</li>
+                        <li>Organize recruitment workflows</li>
+                        <li>Manage performance evaluations</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Forms</span>
+                        <span class="tag">Slack</span>
+                        <span class="tag">Calendar</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-graduation-cap"></i> Educational Process Automation</div>
+                    <ul>
+                        <li>Automatically grade tests</li>
+                        <li>Distribute educational materials</li>
+                        <li>Track student attendance</li>
+                        <li>Generate graduation certificates</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Moodle</span>
+                        <span class="tag">Google Classroom</span>
+                        <span class="tag">PDF Generation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 8: Evaluation and Measurement -->
+    <div class="container" id="slide8">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Evaluation and Measurement</h1>
+                <p class="slide-subtitle">Quantitative and Qualitative Indicators</p>
+            </div>
+            <div class="slide-number">8</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">Quantitative KPIs</h2>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin: 15px 0;">
+                <div class="kpi"><i class="fas fa-clock"></i> Task completion time reduction</div>
+                <div class="kpi"><i class="fas fa-exclamation-triangle"></i> Error rate before/after</div>
+                <div class="kpi"><i class="fas fa-tasks"></i> Tasks executed per hour</div>
+                <div class="kpi"><i class="fas fa-money-bill-wave"></i> Operational cost savings</div>
+                <div class="kpi"><i class="fas fa-tachometer-alt"></i> System response time</div>
+                <div class="kpi"><i class="fas fa-user-check"></i> User satisfaction</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">65%</div>
+                    <div class="stat-label">Time Savings</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">82%</div>
+                    <div class="stat-label">Error Reduction</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">45%</div>
+                    <div class="stat-label">Cost Reduction</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">User Satisfaction</div>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">Qualitative Indicators</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">User Satisfaction</div>
+                    <p>Measuring ease of use, learning curve, and overall satisfaction with the automated system.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">Flexibility & Scalability</div>
+                    <p>Assessing how easily the system adapts to new requirements and scales with growth.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">Reliability & Security</div>
+                    <p>Evaluating data protection, system stability, and regulatory compliance.</p>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">Measurement Tools</h2>
+            <table>
+                <tr>
+                    <th>Tool</th>
+                    <th>Purpose</th>
+                    <th>Metrics</th>
+                </tr>
+                <tr>
+                    <td><strong>Google Analytics</strong></td>
+                    <td>Track user interactions</td>
+                    <td>Usage patterns, session duration</td>
+                </tr>
+                <tr>
+                    <td><strong>n8n Dashboards</strong></td>
+                    <td>System monitoring</td>
+                    <td>Workflow executions, success rates</td>
+                </tr>
+                <tr>
+                    <td><strong>SUS Questionnaire</strong></td>
+                    <td>Usability evaluation</td>
+                    <td>System Usability Scale score</td>
+                </tr>
+                <tr>
+                    <td><strong>Log Analysis</strong></td>
+                    <td>Performance tracking</td>
+                    <td>Error frequency, execution time</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Slide 9: Expected Challenges and Solutions -->
+    <div class="container" id="slide9">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Expected Challenges and Solutions</h1>
+                <p class="slide-subtitle">Anticipating Implementation Hurdles</p>
+            </div>
+            <div class="slide-number">9</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">Technical Challenges</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> Challenge</h3>
+                    <p><strong>Complex integration with legacy systems</strong><br>
+                    Older systems may lack modern APIs or documentation.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> Solution</h3>
+                    <p><strong>Use middleware or custom APIs</strong><br>
+                    Develop connectors or use integration platforms to bridge compatibility gaps.</p>
+                </div>
+            </div>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> Challenge</h3>
+                    <p><strong>API rate limits and quotas</strong><br>
+                    External services may restrict API call frequency.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> Solution</h3>
+                    <p><strong>Implement smart throttling and retry mechanisms</strong><br>
+                    Add intelligent queuing and exponential backoff strategies.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">Organizational Challenges</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> Challenge</h3>
+                    <p><strong>User resistance to change</strong><br>
+                    Employees may hesitate to adopt new automated processes.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> Solution</h3>
+                    <p><strong>Comprehensive training and awareness programs</strong><br>
+                    Demonstrate early benefits and involve users in the design process.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">Security Challenges</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> Challenge</h3>
+                    <p><strong>Protecting credentials and sensitive data</strong><br>
+                    Automated workflows often require access to sensitive systems.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> Solution</h3>
+                    <p><strong>Use encryption and secure secret management</strong><br>
+                    Implement role-based access control and regularly rotate credentials.</p>
+                </div>
+            </div>
+            
+            <div class="stats" style="margin-top: 25px;">
+                <div class="stat scale-in">
+                    <div class="stat-value">70%</div>
+                    <div class="stat-label">Technical Challenges</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">20%</div>
+                    <div class="stat-label">Organizational Challenges</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">10%</div>
+                    <div class="stat-label">Security Challenges</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label">Solvable</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 10: Timeline and Budget -->
+    <div class="container" id="slide10">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Timeline and Budget</h1>
+                <p class="slide-subtitle">Project Planning and Resource Allocation</p>
+            </div>
+            <div class="slide-number">10</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">Estimated Timeline: 5 months (19-20 weeks)</h2>
+            <table>
+                <tr>
+                    <th>Phase</th>
+                    <th>Duration</th>
+                    <th>Key Activities</th>
+                </tr>
+                <tr>
+                    <td><strong>Setup & Literature Review</strong></td>
+                    <td>2-3 weeks</td>
+                    <td>Gather references, analyze studies</td>
+                </tr>
+                <tr>
+                    <td><strong>Analysis & Planning</strong></td>
+                    <td>4 weeks</td>
+                    <td>Requirements gathering, workflow mapping</td>
+                </tr>
+                <tr>
+                    <td><strong>Design & Setup</strong></td>
+                    <td>3 weeks</td>
+                    <td>Environment setup, initial design</td>
+                </tr>
+                <tr>
+                    <td><strong>Development & Execution</strong></td>
+                    <td>6 weeks</td>
+                    <td>Build workflows, testing</td>
+                </tr>
+                <tr>
+                    <td><strong>Testing & Evaluation</strong></td>
+                    <td>4 weeks</td>
+                    <td>Pilot testing, data collection</td>
+                </tr>
+                <tr>
+                    <td><strong>Analysis & Documentation</strong></td>
+                    <td>2 weeks</td>
+                    <td>Report preparation, recommendations</td>
+                </tr>
+            </table>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">Estimated Budget</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">Technical Costs</div>
+                    <ul>
+                        <li>n8n hosting server: $20-50/month</li>
+                        <li>API subscriptions: $50-200/month</li>
+                        <li>Development and testing tools: $100 one-time</li>
+                        <li>Domain and SSL certificate: $30/year</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Human Resource Costs</div>
+                    <ul>
+                        <li>Development and research team</li>
+                        <li>User training sessions</li>
+                        <li>Technical support staff</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Other Costs</div>
+                    <ul>
+                        <li>Monitoring and analytics tools</li>
+                        <li>Backup and security solutions</li>
+                        <li>Documentation materials</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="stats" style="margin-top: 20px;">
+                <div class="stat scale-in">
+                    <div class="stat-value">$500</div>
+                    <div class="stat-label">Technical Costs</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">$1000</div>
+                    <div class="stat-label">Human Resource Costs</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">$300</div>
+                    <div class="stat-label">Other Costs</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">$1800</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 11: Expected Results -->
+    <div class="container" id="slide11">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Expected Results</h1>
+                <p class="slide-subtitle">Tangible Outputs and Contributions</p>
+            </div>
+            <div class="slide-number">11</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-code"></i> Technical Outcomes</div>
+                    <ul>
+                        <li>Functional automation system covering target tasks</li>
+                        <li>Reusable library of workflows</li>
+                        <li>Comprehensive technical documentation</li>
+                        <li>Deployment guides and configuration scripts</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> Practical Outcomes</div>
+                    <ul>
+                        <li>Productivity improvement of 30-50%</li>
+                        <li>Human error reduction of 60-80%</li>
+                        <li>Save 15-25 working hours weekly</li>
+                        <li>Increased process consistency and reliability</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-graduation-cap"></i> Scientific Contribution</div>
+                    <ul>
+                        <li>Reference framework for task automation using n8n</li>
+                        <li>Practical case study with empirical data</li>
+                        <li>Recommendations for researchers and practitioners</li>
+                        <li>Methodology for evaluating automation impact</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">45%</div>
+                    <div class="stat-label">Productivity Improvement</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">75%</div>
+                    <div class="stat-label">Error Reduction</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">20</div>
+                    <div class="stat-label">Hours Saved/Week</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">90%</div>
+                    <div class="stat-label">User Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 12: Recommendations and Future Work -->
+    <div class="container" id="slide12">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Recommendations and Future Work</h1>
+                <p class="slide-subtitle">Implementation Guidelines and Research Directions</p>
+            </div>
+            <div class="slide-number">12</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">Implementation Recommendations</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">Start Simple, Then Scale</div>
+                    <p>Begin with simple automation tasks before tackling complex workflows to build confidence and demonstrate quick wins.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Involve Users Early</div>
+                    <p>Involve end-users in the design phases to ensure the system meets actual needs and reduces resistance to change.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Build Robust Backup Systems</div>
+                    <p>Implement regular backup systems for workflows and data to prevent loss and ensure business continuity.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">Regular Maintenance</div>
+                    <p>Schedule periodic reviews and updates to keep the automation system aligned with evolving business needs.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">Future Research Areas</h2>
+            <ul>
+                <li><strong>AI Integration:</strong> Incorporate machine learning for intelligent decision-making within workflows</li>
+                <li><strong>Complex Automation:</strong> Automate multi-step decision processes with conditional logic</li>
+                <li><strong>Sectoral Templates:</strong> Develop ready-to-use automation templates for healthcare, education, retail, and more</li>
+                <li><strong>Long-term Impact Studies:</strong> Research organizational transformation through sustained automation</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Slide 13: Questions and Discussion -->
+    <div class="container" id="slide13">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Questions and Discussion</h1>
+                <p class="slide-subtitle">Thank you for your attention</p>
+            </div>
+            <div class="slide-number">13</div>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; margin: 40px 0;" class="animation-delay-4s">
+                <div style="font-size: 3.5rem; color: var(--secondary); margin-bottom: 15px;" class="scale-pulse">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h2>Open Floor for Questions</h2>
+                <p style="font-size: 1.1rem; margin: 20px 0; color: var(--dark);">
+                    Let's discuss how n8n automation can transform your workflows
+                </p>
+                
+                <div style="max-width: 500px; margin: 25px auto; background: white; padding: 20px; border-radius: 8px; border-left: 3px solid var(--secondary);" class="scale-in">
+                    <h3 style="color: var(--secondary);">Research Presentation Summary</h3>
+                    <ul style="text-align: left; margin-top: 15px;">
+                        <li>n8n provides a powerful open-source alternative for workflow automation</li>
+                        <li>Practical implementation can achieve 30-50% productivity improvements</li>
+                        <li>A phased approach ensures successful adoption and measurable results</li>
+                        <li>The developed framework can be adapted to different organizational contexts</li>
+                        <li>This research contributes to academic knowledge in automation studies</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <div class="degree-badge" style="font-size: 1rem; padding: 8px 20px;">
+                        <i class="fas fa-award"></i> Master's Thesis Discussion
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 14: Interactive Simulation of Proposed Systems with n8n -->
+    <div class="container" id="slide14">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">Interactive Simulation of Proposed Systems using n8n</h1>
+                <p class="slide-subtitle">Real-time Workflow Representation with all n8n Tools</p>
+            </div>
+            <div class="slide-number">14</div>
+        </div>
+        
+        <div class="content">
+            <!-- Comprehensive n8n Tools Showcase -->
+            <div class="highlight scale-pulse">
+                <h3 style="color: var(--primary);" class="animation-delay-4s"><i class="fas fa-toolbox"></i> Comprehensive n8n Tools Library</h3>
+                <div class="tools-showcase">
+                    <div class="tool-card">
+                        <div class="tool-icon n8n">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="tool-name">n8n</div>
+                        <div class="tool-description">Automation Platform</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon openai">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="tool-name">OpenAI</div>
+                        <div class="tool-description">Advanced AI</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon ai-agent">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="tool-name">AI Agent</div>
+                        <div class="tool-description">Intelligent Autonomous Agent</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon github">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="tool-name">GitHub</div>
+                        <div class="tool-description">Source Code Management</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon slack">
+                            <i class="fab fa-slack"></i>
+                        </div>
+                        <div class="tool-name">Slack</div>
+                        <div class="tool-description">Team Communication</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon notion">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="tool-name">Notion</div>
+                        <div class="tool-description">Knowledge Management</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon postgres">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="tool-name">PostgreSQL</div>
+                        <div class="tool-description">Relational Database</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon mongodb">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name">MongoDB</div>
+                        <div class="tool-description">NoSQL Database</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon redis">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="tool-name">Redis</div>
+                        <div class="tool-description">Cache Memory</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon docker">
+                            <i class="fab fa-docker"></i>
+                        </div>
+                        <div class="tool-name">Docker</div>
+                        <div class="tool-description">Containers & Deployment</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="tool-name">WhatsApp</div>
+                        <div class="tool-description">Instant Messaging</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon twitter">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="tool-name">Twitter</div>
+                        <div class="tool-description">Social Media</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System 1: Integrated Smart HR System -->
+            <div class="system-overview">
+                <div class="project-header">
+                    <div class="project-title">
+                        <i class="fas fa-users-cog" style="color: var(--secondary);"></i>
+                        System 1: Integrated Smart HR System
+                    </div>
+                    <div class="project-badge">Live Interactive Simulation</div>
+                </div>
+                
+                <div class="workflow-simulator">
+                    <div class="workflow-header">
+                        <div class="workflow-title">
+                            <i class="fas fa-project-diagram"></i>
+                            Workflow: Automated Employee Request Processing
+                        </div>
+                        <div class="workflow-status">
+                            <i class="fas fa-circle"></i>
+                            Running
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-canvas" id="hr-workflow">
+                        <div class="node-line">
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-envelope-open-text"></i>
+                                </div>
+                                <div class="node-name">Receive Requests</div>
+                                <div class="node-description">Email Trigger</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="node-name">Text Analysis</div>
+                                <div class="node-description">OpenAI</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="node-name">Intelligent Processing</div>
+                                <div class="node-description">AI Agent</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="node-name">Update Data</div>
+                                <div class="node-description">PostgreSQL</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fab fa-slack"></i>
+                                </div>
+                                <div class="node-name">Send Notification</div>
+                                <div class="node-description">Slack</div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-flow" id="hr-data-flow"></div>
+                        
+                        <div class="workflow-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-processing">98.5%</div>
+                                <div class="stat-label">Analysis Accuracy</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-requests">350</div>
+                                <div class="stat-label">Requests/Day</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-speed">0.5s</div>
+                                <div class="stat-label">Processing Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-reliability">100%</div>
+                                <div class="stat-label">Reliability</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-demo">
+                        <h3 style="color: white;" class="animation-delay-4s"><i class="fas fa-play-circle"></i> Live Simulation Experience</h3>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="startHRWorkflow()">
+                                <i class="fas fa-play"></i> Start Processing
+                            </button>
+                            <button class="demo-btn" onclick="simulateHRRequest()">
+                                <i class="fas fa-plus"></i> New Request
+                            </button>
+                            <button class="demo-btn" onclick="resetHRWorkflow()">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                        <div class="demo-output" id="hr-demo-output">
+                            ⏳ Ready to start... Click "Start Processing"
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System 2: Smart Multi-Channel Customer Service -->
+            <div class="system-overview">
+                <div class="project-header">
+                    <div class="project-title">
+                        <i class="fas fa-headset" style="color: var(--secondary);"></i>
+                        System 2: Smart Multi-Channel Customer Service
+                    </div>
+                    <div class="project-badge">Live Chat Simulation</div>
+                </div>
+                
+                <div class="workflow-simulator">
+                    <div class="workflow-header">
+                        <div class="workflow-title">
+                            <i class="fas fa-comments"></i>
+                            Workflow: Intelligent Automated Support
+                        </div>
+                        <div class="workflow-status">
+                            <i class="fas fa-circle"></i>
+                            Active - 5000 conversations
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-canvas">
+                        <div class="node-line">
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <div class="node-name">WhatsApp</div>
+                                <div class="node-description">API</div>
+                            </div>
+                            
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="node-name">Email</div>
+                                <div class="node-description">SMTP</div>
+                            </div>
+                            
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fab fa-twitter"></i>
+                                </div>
+                                <div class="node-name">Twitter</div>
+                                <div class="node-description">API</div>
+                            </div>
+                        </div>
+                        
+                        <div class="node-line" style="margin-top: 20px;">
+                            <div class="connection-line" style="max-width: 60px;"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-language"></i>
+                                </div>
+                                <div class="node-name">Language Understanding</div>
+                                <div class="node-description">NLP</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="node-name">Response Generation</div>
+                                <div class="node-description">AI Agent</div>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">92%</div>
+                                <div class="stat-label">Understanding Accuracy</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0.3s</div>
+                                <div class="stat-label">Response Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">70%</div>
+                                <div class="stat-label">Auto-Solved</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">88%</div>
+                                <div class="stat-label">Customer Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-demo">
+                        <h3 style="color: white;" class="animation-delay-4s"><i class="fas fa-comment-dots"></i> Live Chat Simulation</h3>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="startCustomerService()">
+                                <i class="fas fa-comments"></i> Start Chat
+                            </button>
+                            <button class="demo-btn" onclick="sendCustomerMessage()">
+                                <i class="fas fa-paper-plane"></i> Send Inquiry
+                            </button>
+                            <button class="demo-btn" onclick="escalateToHuman()">
+                                <i class="fas fa-user-headset"></i> Escalate to Human
+                            </button>
+                        </div>
+                        <div class="demo-output" id="chat-demo-output">
+                            🤖 Hello! I'm the smart customer service assistant. How can I help you?
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technologies Summary -->
+            <div style="text-align: center; margin-top: 30px; padding: 25px; background: white; border-radius: 12px; border-left: 4px solid var(--accent);" class="scale-in">
+                <h2 style="color: var(--primary); margin-bottom: 18px;" class="animation-delay-4s"><i class="fas fa-rocket" style="color: var(--secondary);"></i> Advanced n8n Capabilities</h2>
+                
+                <div class="integration-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div class="integration-title">+300 Integrated Tools</div>
+                        <div class="integration-desc">Seamless integration with all major platforms</div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <div class="integration-title">Unlimited Complexity</div>
+                        <div class="integration-desc">Build complex multi-stage workflows</div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="integration-title">Real-time Processing</div>
+                        <div class="integration-desc">Instant response to events</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div class="degree-badge" style="background: linear-gradient(135deg, #fff9c4, #ffecb3);">
+                        <i class="fas fa-check-circle" style="color: var(--accent);"></i> All systems are immediately deployable
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.container');
+        const dotsContainer = document.getElementById('navDots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('slide-progress');
+        
+        let currentSlide = 0;
+        
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+        
+        function updateSlide() {
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            slides[currentSlide].classList.add('active');
+            
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+        
+        function goToSlide(index) {
+            if (index >= 0 && index < slides.length) {
+                currentSlide = index;
+                updateSlide();
+            }
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+        
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
+            }
+        });
+        
+        // Simulation functions
+        let hrWorkflowActive = false;
+        let hrRequests = 0;
+        let chatActive = false;
+        let chatMessages = [];
+        
+        function startHRWorkflow() {
+            hrWorkflowActive = true;
+            const output = document.getElementById('hr-demo-output');
+            if (output) {
+                output.innerHTML = `
+                    <span style="color: var(--secondary);">▶️ Starting employee request processing...</span><br>
+                    ✅ Email trigger activated<br>
+                    🤖 AI Agent ready to analyze requests<br>
+                    💾 PostgreSQL connected and running<br>
+                    📢 Slack notifications enabled
+                `;
+            }
+            
+            const dataFlow = document.getElementById('hr-data-flow');
+            if (dataFlow) {
+                dataFlow.style.animation = 'dataFlow 3s infinite linear';
+            }
+            
+            setTimeout(() => {
+                if (output) {
+                    output.innerHTML += '<br><br>✅ System ready to receive requests';
+                }
+            }, 2000);
+        }
+        
+        function simulateHRRequest() {
+            if (!hrWorkflowActive) {
+                alert('Please start the system first!');
+                return;
+            }
+            
+            hrRequests++;
+            const requests = [
+                'Sick leave request for 3 days',
+                'Salary data update',
+                'Training request in AI field',
+                'Quarterly performance report',
+                'New office equipment request'
+            ];
+            
+            const randomRequest = requests[Math.floor(Math.random() * requests.length)];
+            const output = document.getElementById('hr-demo-output');
+            
+            if (output) {
+                output.innerHTML = `
+                    📥 <strong>New request:</strong> ${randomRequest}<br>
+                    🔍 <span style="color: var(--secondary);">Analyzing purpose with OpenAI...</span><br>
+                    🤖 <span style="color: var(--secondary);">AI Agent determining request type</span><br>
+                    💾 <span style="color: var(--secondary);">Updating database...</span><br>
+                    📢 <span style="color: var(--secondary);">Notification sent to relevant department</span><br>
+                    ✅ <strong style="color: var(--accent);">Request processed successfully!</strong>
+                `;
+            }
+            
+            document.getElementById('hr-requests').textContent = 350 + hrRequests;
+        }
+        
+        function resetHRWorkflow() {
+            hrWorkflowActive = false;
+            hrRequests = 0;
+            const dataFlow = document.getElementById('hr-data-flow');
+            if (dataFlow) {
+                dataFlow.style.animation = 'none';
+            }
+            const output = document.getElementById('hr-demo-output');
+            if (output) {
+                output.innerHTML = '⏳ Ready to start... Click "Start Processing"';
+            }
+            document.getElementById('hr-requests').textContent = '350';
+        }
+        
+        function startCustomerService() {
+            chatActive = true;
+            chatMessages = [
+                { sender: 'bot', text: 'Hello! I am the smart customer service assistant. How can I help you today?' }
+            ];
+            updateChatDisplay();
+        }
+        
+        function sendCustomerMessage() {
+            if (!chatActive) {
+                alert('Please start the chat first!');
+                return;
+            }
+            
+            const customerMessages = [
+                'I want to know the status of my order',
+                'I have a problem with the product',
+                'How can I change my password?',
+                'I need the purchase invoice',
+                'What are the working hours?'
+            ];
+            
+            const randomMessage = customerMessages[Math.floor(Math.random() * customerMessages.length)];
+            chatMessages.push({ sender: 'customer', text: randomMessage });
+            
+            setTimeout(() => {
+                const botResponses = [
+                    'Searching for your order information...',
+                    'I will transfer you to the relevant department.',
+                    'You can change your password in settings.',
+                    'I will send the invoice to your email.',
+                    'Working hours are from 9 AM to 6 PM.'
+                ];
+                
+                const botResponse = botResponses[customerMessages.indexOf(randomMessage)] || 'Thank you for contacting us. I will assist you with that.';
+                chatMessages.push({ sender: 'bot', text: botResponse });
+                updateChatDisplay();
+            }, 1000);
+            
+            updateChatDisplay();
+        }
+        
+        function escalateToHuman() {
+            if (!chatActive) return;
+            chatMessages.push({ 
+                sender: 'system', 
+                text: '📞 The conversation has been transferred to a customer service agent. They will contact you shortly.' 
+            });
+            updateChatDisplay();
+        }
+        
+        function updateChatDisplay() {
+            const output = document.getElementById('chat-demo-output');
+            if (!output) return;
+            
+            let html = '';
+            chatMessages.forEach(msg => {
+                if (msg.sender === 'bot') {
+                    html += `<div style="text-align: left; margin: 8px 0; padding: 8px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border-left: 2px solid var(--accent);">
+                        <strong>🤖 Assistant:</strong> ${msg.text}
+                    </div>`;
+                } else if (msg.sender === 'customer') {
+                    html += `<div style="text-align: right; margin: 8px 0; padding: 8px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-right: 2px solid var(--secondary);">
+                        <strong>👤 Customer:</strong> ${msg.text}
+                    </div>`;
+                } else {
+                    html += `<div style="text-align: center; margin: 8px 0; padding: 8px; background: rgba(231, 76, 60, 0.1); border-radius: 8px;">
+                        <strong>📢 ${msg.text}</strong>
+                    </div>`;
+                }
+            });
+            output.innerHTML = html;
+        }
+        
+        function switchToArabic() {
+
+        }
+        
+        updateSlide();
+        
+        console.log('🎓 Research plan presentation ready - English version');
+        console.log('🎨 Colors: Primary #2c3e50, Secondary #3498db, Accent #2ecc71');
+    </script>
+</body>
+</html>
