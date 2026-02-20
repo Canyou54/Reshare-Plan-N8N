@@ -1,0 +1,3525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>أتمتة المهام اليومية باستخدام n8n - خطة بحث</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #2ecc71;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --warning: #e74c3c;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --n8n-color: #13c9ca;
+            --openai: #10a37f;
+            --ai-agent: #85a7fa;
+            --github: #333;
+            --slack: #4a154b;
+            --notion: #000;
+            --postgres: #336791;
+            --mongodb: #47a248;
+            --redis: #d82c20;
+            --docker: #2496ed;
+            --whatsapp: #25D366;
+            --twitter: #1DA1F2;
+            --linkedin: #0077b5;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 25px 15px;
+            background: var(--light);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation-delay: 0.5s;
+        }
+        
+        .container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: slideInScale 1s ease-out 0.5s both;
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--secondary);
+            animation: fadeInDown 1s ease-out 1s both;
+        }
+        
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(to left, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleGlow 4s ease-in-out infinite 4s;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+            }
+        }
+        
+        .slide-subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            animation: fadeInRight 1s ease-out 1.2s both;
+        }
+        
+        @keyframes fadeInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .slide-number {
+            background: var(--gradient);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            animation: pulseNumber 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes pulseNumber {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .content {
+            margin-top: 15px;
+            animation: contentAppear 1s ease-out 1.5s both;
+        }
+        
+        @keyframes contentAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin: 20px 0 12px;
+            font-size: 1.4rem;
+            border-right: 4px solid var(--secondary);
+            padding-right: 12px;
+            animation: slideInRight 0.8s ease-out 2s both;
+        }
+        
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 15px 0 8px;
+            font-size: 1.2rem;
+            animation: fadeInUp 0.8s ease-out 2.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: var(--dark);
+            animation: fadeIn 1s ease-out 2.4s both;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        ul, ol {
+            margin-right: 20px;
+            margin-bottom: 18px;
+            animation: fadeIn 1s ease-out 2.6s both;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            padding-right: 8px;
+            position: relative;
+            font-size: 0.95rem;
+            animation: slideInListItem 0.5s ease-out forwards;
+            opacity: 0;
+            color: var(--dark);
+            list-style: none;
+        }
+        
+        li:nth-child(1) { animation-delay: 2.8s; }
+        li:nth-child(2) { animation-delay: 3.0s; }
+        li:nth-child(3) { animation-delay: 3.2s; }
+        li:nth-child(4) { animation-delay: 3.4s; }
+        li:nth-child(5) { animation-delay: 3.6s; }
+        li:nth-child(6) { animation-delay: 3.8s; }
+        
+        @keyframes slideInListItem {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        li:before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            margin-left: 8px;
+            position: absolute;
+            right: -12px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+            border-right: 4px solid var(--secondary);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--light);
+            animation: cardAppear 0.8s ease-out 3s both;
+            transform-origin: center;
+        }
+        
+        @keyframes cardAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
+            border-right-color: var(--accent);
+            animation: cardHoverPulse 2s infinite 4s;
+        }
+        
+        @keyframes cardHoverPulse {
+            0%, 100% {
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
+            }
+            50% {
+                box-shadow: 0 20px 40px rgba(52, 152, 219, 0.25);
+            }
+        }
+        
+        .card-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInRight 0.8s ease-out 3.2s both;
+        }
+        
+        .card-title i {
+            color: var(--secondary);
+            animation: iconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+            animation: gridAppear 1s ease-out 3.4s both;
+        }
+        
+        @keyframes gridAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 25px 0;
+            gap: 15px;
+            animation: statsAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes statsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+            text-align: center;
+            border: 1px solid var(--light);
+            transition: all 0.4s ease;
+            animation: statPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes statPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+            }
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            animation: numberCount 2s ease-out 4s both;
+        }
+        
+        @keyframes numberCount {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease-out 4.2s both;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            animation: tableAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes tableAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        th {
+            background: var(--gradient);
+            color: white;
+            padding: 14px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: tableHeaderSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes tableHeaderSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+            font-size: 0.9rem;
+            animation: tableRowAppear 0.5s ease-out forwards;
+            opacity: 0;
+            color: var(--dark);
+        }
+        
+        tr:nth-child(1) td { animation-delay: 4.2s; }
+        tr:nth-child(2) td { animation-delay: 4.4s; }
+        tr:nth-child(3) td { animation-delay: 4.6s; }
+        tr:nth-child(4) td { animation-delay: 4.8s; }
+        tr:nth-child(5) td { animation-delay: 5.0s; }
+        
+        @keyframes tableRowAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        tr:hover {
+            background-color: var(--light);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        
+        .highlight {
+            background: var(--light);
+            padding: 18px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid var(--accent);
+            font-size: 0.95rem;
+            animation: highlightPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes highlightPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(46, 204, 113, 0.1);
+            }
+            50% {
+                transform: scale(1.01);
+                box-shadow: 0 8px 20px rgba(46, 204, 113, 0.15);
+            }
+        }
+        
+        .researcher-info {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: researcherInfoAppear 1s ease-out 1s both;
+            transform-origin: center;
+        }
+        
+        @keyframes researcherInfoAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .researcher-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            animation: nameGlow 3s infinite 4s;
+        }
+        
+        @keyframes nameGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+        }
+        
+        .research-purpose {
+            font-size: 1rem;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 1.2s both;
+        }
+        
+        .degree-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff9c4, #ffecb3);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            animation: badgeBounce 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        @keyframes badgeBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+            animation: controlsAppear 1s ease-out 2s both;
+        }
+        
+        @keyframes controlsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            animation: buttonPulse 2s infinite 4s;
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav-dots {
+            position: fixed;
+            bottom: 25px;
+            right: 50%;
+            transform: translateX(50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            animation: dotsAppear 1s ease-out 2.2s both;
+        }
+        
+        @keyframes dotsAppear {
+            0% {
+                opacity: 0;
+                transform: translateX(50%) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(50%) translateY(0);
+            }
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: dotPulse 2s infinite 4s;
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        
+        .dot.active {
+            background: var(--gradient);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+            animation: activeDotGlow 2s infinite 4s;
+        }
+        
+        @keyframes activeDotGlow {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(102, 126, 234, 0.8);
+            }
+        }
+        
+        .logo {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            animation: logoSlide 1s ease-out 1s both;
+        }
+        
+        @keyframes logoSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .logo i {
+            margin-left: 8px;
+            color: var(--n8n-color);
+            animation: logoSpin 4s linear infinite 4s;
+        }
+        
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--secondary);
+            animation: tagAppear 0.5s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .tag:nth-child(1) { animation-delay: 4s; }
+        .tag:nth-child(2) { animation-delay: 4.2s; }
+        .tag:nth-child(3) { animation-delay: 4.4s; }
+        
+        @keyframes tagAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        .kpi {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            padding: 8px 15px;
+            border-radius: 25px;
+            margin: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: 1px solid var(--secondary);
+            animation: kpiAppear 0.6s ease-out 4s both;
+            transform-origin: center;
+            color: var(--dark);
+        }
+        
+        @keyframes kpiAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .kpi i {
+            color: var(--secondary);
+            margin-left: 8px;
+            animation: kpiIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes kpiIconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .challenge-solution {
+            display: flex;
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            animation: challengeAppear 1s ease-out 3.5s both;
+        }
+        
+        @keyframes challengeAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .challenge {
+            flex: 1;
+            background: linear-gradient(135deg, #fadbd8, #f5b7b1);
+            padding: 15px;
+            border-left: 1px solid #e6b0aa;
+            animation: challengeSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes challengeSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .solution {
+            flex: 1;
+            background: linear-gradient(135deg, #d4efdf, #a9dfbf);
+            padding: 15px;
+            animation: solutionSlide 0.8s ease-out 4.2s both;
+        }
+        
+        @keyframes solutionSlide {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .timeline-bar {
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin: 25px 0;
+            position: relative;
+            animation: timelineAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes timelineAppear {
+            0% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+        }
+        
+        .timeline-phase {
+            height: 100%;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            background: var(--gradient);
+            animation: phaseExpand 1s ease-out 4s both;
+            transform-origin: right;
+        }
+        
+        @keyframes phaseExpand {
+            0% {
+                transform: scaleX(0);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+        
+        .phase-label {
+            position: absolute;
+            top: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--secondary);
+            animation: phaseLabelAppear 0.8s ease-out 4.5s both;
+        }
+        
+        @keyframes phaseLabelAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-demo {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-right: 4px solid var(--secondary);
+            animation: projectDemoAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes projectDemoAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) rotateX(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            animation: projectHeaderAppear 0.8s ease-out 4s both;
+        }
+        
+        @keyframes projectHeaderAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: projectTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes projectTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .project-badge {
+            background: var(--gradient);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            animation: badgePulse 2s infinite 4s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            }
+        }
+        
+        .workflow-simulator {
+            background: var(--gradient);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: simulatorAppear 1s ease-out 3.5s both;
+            transform-origin: center;
+        }
+        
+        @keyframes simulatorAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0);
+            }
+        }
+        
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(52, 152, 219, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-right: 4px solid var(--accent);
+            color: white;
+            animation: workflowHeaderSlide 0.8s ease-out 4s both;
+        }
+        
+        @keyframes workflowHeaderSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .workflow-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: workflowTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes workflowTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            }
+        }
+        
+        .workflow-title i {
+            color: var(--accent);
+            animation: workflowIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes workflowIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .workflow-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a9dfbf;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: statusPulse 2s infinite 4s;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        .workflow-canvas {
+            min-height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            animation: canvasAppear 1s ease-out 4.2s both;
+        }
+        
+        @keyframes canvasAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .node-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+            position: relative;
+            animation: nodeLineAppear 1s ease-out 4.4s both;
+        }
+        
+        @keyframes nodeLineAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .n8n-node {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 130px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+            cursor: pointer;
+            animation: nodeAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .n8n-node:nth-child(1) { animation-delay: 4.6s; }
+        .n8n-node:nth-child(2) { animation-delay: 4.8s; }
+        .n8n-node:nth-child(3) { animation-delay: 5.0s; }
+        .n8n-node:nth-child(4) { animation-delay: 5.2s; }
+        .n8n-node:nth-child(5) { animation-delay: 5.4s; }
+        
+        @keyframes nodeAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        .n8n-node:hover {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border-color: var(--accent);
+            z-index: 10;
+            animation: nodeHoverPulse 2s infinite 4s;
+        }
+        
+        @keyframes nodeHoverPulse {
+            0%, 100% {
+                box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            }
+            50% {
+                box-shadow: 0 20px 45px rgba(46, 204, 113, 0.6);
+            }
+        }
+        
+        .node-icon {
+            font-size: 2rem;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            background: rgba(255,255,255,0.1);
+            animation: iconFloat 3s ease-in-out infinite 4s;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .node-name {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            animation: nodeNameGlow 3s infinite 4s;
+        }
+        
+        @keyframes nodeNameGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+        }
+        
+        .node-description {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            animation: descriptionPulse 2s infinite 4s;
+        }
+        
+        @keyframes descriptionPulse {
+            0%, 100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+        
+        .connection-line {
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            flex-grow: 1;
+            max-width: 40px;
+            position: relative;
+            margin: 0 3px;
+            animation: connectionFlow 2s infinite 4s;
+        }
+        
+        @keyframes connectionFlow {
+            0% {
+                background: linear-gradient(90deg, var(--secondary), var(--accent));
+                transform: scaleX(1);
+            }
+            50% {
+                background: linear-gradient(90deg, var(--accent), var(--secondary));
+                transform: scaleX(1.1);
+            }
+            100% {
+                background: linear-gradient(90deg, var(--secondary), var(--accent));
+                transform: scaleX(1);
+            }
+        }
+        
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: dotPulse 2s infinite 4s;
+        }
+        
+        .connection-line::after {
+            content: '←';
+            position: absolute;
+            top: -12px;
+            right: -5px;
+            color: var(--accent);
+            font-size: 1.2rem;
+            animation: arrowMove 2s infinite 4s;
+        }
+        
+        @keyframes arrowMove {
+            0%, 100% {
+                right: -5px;
+                opacity: 0.8;
+            }
+            50% {
+                right: 5px;
+                opacity: 1;
+            }
+        }
+        
+        .workflow-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            animation: statsGridAppear 1s ease-out 5.6s both;
+        }
+        
+        @keyframes statsGridAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-item {
+            text-align: center;
+            color: white;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            animation: statItemPulse 3s infinite 4s;
+            transform-origin: center;
+        }
+        
+        @keyframes statItemPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            }
+        }
+        
+        .data-flow {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: dataFlow 3s infinite linear 4s;
+            z-index: 1;
+        }
+        
+        @keyframes dataFlow {
+            0% { transform: translateX(100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(calc(-100vw + 100px)); opacity: 0; }
+        }
+        
+        .tools-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            animation: toolsShowcaseAppear 1s ease-out 3.8s both;
+        }
+        
+        @keyframes toolsShowcaseAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid var(--light);
+            animation: toolCardAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .tool-card:nth-child(1) { animation-delay: 4s; }
+        .tool-card:nth-child(2) { animation-delay: 4.1s; }
+        .tool-card:nth-child(3) { animation-delay: 4.2s; }
+        .tool-card:nth-child(4) { animation-delay: 4.3s; }
+        .tool-card:nth-child(5) { animation-delay: 4.4s; }
+        .tool-card:nth-child(6) { animation-delay: 4.5s; }
+        .tool-card:nth-child(7) { animation-delay: 4.6s; }
+        .tool-card:nth-child(8) { animation-delay: 4.7s; }
+        .tool-card:nth-child(9) { animation-delay: 4.8s; }
+        .tool-card:nth-child(10) { animation-delay: 4.9s; }
+        .tool-card:nth-child(11) { animation-delay: 5.0s; }
+        .tool-card:nth-child(12) { animation-delay: 5.1s; }
+        
+        @keyframes toolCardAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotateY(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0);
+            }
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            border-color: var(--secondary);
+            animation: toolCardHover 2s infinite 4s;
+        }
+        
+        @keyframes toolCardHover {
+            0%, 100% {
+                transform: translateY(-8px) scale(1.1);
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            }
+            50% {
+                transform: translateY(-12px) scale(1.15);
+                box-shadow: 0 20px 40px rgba(52, 152, 219, 0.3);
+            }
+        }
+        
+        .tool-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, var(--light), #d5dbdb);
+            animation: toolIconFloat 3s ease-in-out infinite 4s;
+        }
+        
+        @keyframes toolIconFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0);
+            }
+            50% {
+                transform: translateY(-5px) rotate(-5deg);
+            }
+        }
+        
+        .tool-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            animation: toolNameGlow 3s infinite 4s;
+        }
+        
+        @keyframes toolNameGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .tool-description {
+            color: var(--dark);
+            font-size: 0.75rem;
+            line-height: 1.3;
+            animation: fadeIn 1s ease-out 5s both;
+        }
+        
+        .system-overview {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-right: 4px solid var(--secondary);
+            animation: systemOverviewAppear 1s ease-out 3.6s both;
+        }
+        
+        @keyframes systemOverviewAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 18px 0;
+            animation: integrationGridAppear 1s ease-out 4s both;
+        }
+        
+        @keyframes integrationGridAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .integration-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-right: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+            animation: integrationItemAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform-origin: center;
+        }
+        
+        .integration-item:nth-child(1) { animation-delay: 4.2s; }
+        .integration-item:nth-child(2) { animation-delay: 4.4s; }
+        .integration-item:nth-child(3) { animation-delay: 4.6s; }
+        
+        @keyframes integrationItemAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .integration-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
+            border-right-color: var(--accent);
+            animation: integrationItemHover 2s infinite 4s;
+        }
+        
+        @keyframes integrationItemHover {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.15);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.08);
+                box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+            }
+        }
+        
+        .integration-icon {
+            font-size: 1.6rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            animation: integrationIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes integrationIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(-10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        
+        .integration-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            animation: integrationTitleGlow 3s infinite 4s;
+        }
+        
+        @keyframes integrationTitleGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(44, 62, 80, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(44, 62, 80, 0.4);
+            }
+        }
+        
+        .integration-desc {
+            color: var(--dark);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            animation: fadeIn 1s ease-out 4.5s both;
+        }
+        
+        .live-demo {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            animation: liveDemoAppear 1s ease-out 4.2s both;
+        }
+        
+        @keyframes liveDemoAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) rotateX(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+        
+        .demo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0;
+            animation: demoControlsAppear 0.8s ease-out 4.4s both;
+        }
+        
+        @keyframes demoControlsAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .demo-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.85rem;
+            animation: demoBtnPulse 2s infinite 4s;
+        }
+        
+        @keyframes demoBtnPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(255,255,255,0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(255,255,255,0.3);
+            }
+        }
+        
+        .demo-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.3);
+        }
+        
+        .demo-output {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 80px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            animation: demoOutputAppear 0.8s ease-out 4.6s both;
+        }
+        
+        .linkedin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--linkedin);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            text-decoration: none;
+            animation: linkedinBtnAppear 1s ease-out 1.5s both;
+        }
+        
+        @keyframes linkedinBtnAppear {
+            0% {
+                opacity: 0;
+                transform: translateX(50px) rotate(180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) rotate(0);
+            }
+        }
+        
+        .linkedin-btn:hover {
+            background: #005582;
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 119, 181, 0.4);
+            animation: linkedinBtnHover 2s infinite 4s;
+        }
+        
+        @keyframes linkedinBtnHover {
+            0%, 100% {
+                transform: translateY(-5px) scale(1.1);
+                box-shadow: 0 10px 30px rgba(0, 119, 181, 0.4);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.15);
+                box-shadow: 0 15px 40px rgba(0, 119, 181, 0.5);
+            }
+        }
+        
+        .linkedin-btn i {
+            transition: transform 0.3s;
+            animation: linkedinIconSpin 3s linear infinite 4s;
+        }
+        
+        @keyframes linkedinIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(-10deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        
+        #slide-progress {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.3s ease;
+            animation: progressPulse 3s infinite 4s;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+            }
+        }
+        
+        .scale-in {
+            animation: cardAppear 0.8s ease-out 3s both;
+        }
+        
+        .animation-delay-4s {
+            animation-delay: 4s !important;
+        }
+        
+        .scale-pulse {
+            animation: statPulse 3s infinite 4s;
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: elementAppear 1s ease-out 4s both;
+        }
+        
+        @keyframes elementAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .slide-title {
+                font-size: 1.4rem;
+            }
+            
+            .slide-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .stat {
+                min-width: 120px;
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            
+            .challenge-solution {
+                flex-direction: column;
+            }
+            
+            .challenge {
+                border-left: none;
+                border-bottom: 1px solid #e6b0aa;
+            }
+            
+            .controls {
+                left: 15px;
+                bottom: 15px;
+            }
+            
+            .btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .nav-dots {
+                bottom: 20px;
+            }
+            
+            .tools-showcase {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
+            
+            .workflow-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .n8n-node {
+                min-width: 110px;
+                padding: 12px;
+            }
+            
+            .node-icon {
+                font-size: 1.6rem;
+                height: 40px;
+                width: 40px;
+            }
+            
+            .linkedin-btn {
+                right: 15px;
+                bottom: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .logo {
+                top: 10px;
+                right: 10px;
+                font-size: 0.9rem;
+                padding: 5px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .slide-title {
+                font-size: 1.2rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .tools-showcase {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            
+            .tool-card {
+                padding: 10px 5px;
+            }
+            
+            .tool-icon {
+                font-size: 1.5rem;
+                height: 35px;
+                width: 35px;
+            }
+        }
+
+        .tool-icon.n8n { color: var(--n8n-color); }
+        .tool-icon.openai { color: var(--openai); }
+        .tool-icon.ai-agent { color: var(--ai-agent); }
+        .tool-icon.github { color: var(--github); }
+        .tool-icon.slack { color: var(--slack); }
+        .tool-icon.notion { color: var(--notion); }
+        .tool-icon.postgres { color: var(--postgres); }
+        .tool-icon.mongodb { color: var(--mongodb); }
+        .tool-icon.redis { color: var(--redis); }
+        .tool-icon.docker { color: var(--docker); }
+        .tool-icon.whatsapp { color: var(--whatsapp); }
+        .tool-icon.twitter { color: var(--twitter); }
+    </style>
+</head>
+<body>
+    <!-- زر اللغة -->
+    <a href="index E.html" class="linkedin-btn" onclick="switchToEnglish()">
+        <i class="fas fa-language"></i>
+    </a>
+    
+    <!-- أزرار التنقل -->
+    <div class="controls">
+        <button class="btn" id="prevBtn">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="btn" id="nextBtn">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+    </div>
+    
+    <!-- نقاط التنقل -->
+    <div class="nav-dots" id="navDots"></div>
+    
+    <!-- شريط التقدم -->
+    <div id="slide-progress"></div>
+    
+    <!-- الشعار -->
+    <div class="logo">
+        <i class="fas fa-robot"></i> بحث n8n
+    </div>
+    
+    <!-- الشريحة 1: العنوان -->
+    <div class="container active" id="slide1">
+        <div class="researcher-info">
+            <div class="researcher-name">  الطالب : يوسف التجاني محمد عمر  </div>
+            <div class="research-purpose">خطة  البحث   </div>
+            <div class="degree-badge">أتمتة المهام اليومية بإستخدام n8n </div>
+        </div>
+        
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">تطوير نظام أتمتة ذكي لمعالجة المهام اليومية</h1>
+                <p class="slide-subtitle">باستخدام منصة n8n: دراسة تطبيقية</p>
+            </div>
+            <div class="slide-number">١</div>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 15px;" class="scale-pulse">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h2 class="animation-delay-4s">عرض البحث</h2>
+                <p style="font-size: 1.1rem; margin-top: 10px; color: var(--dark);" class="animation-delay-4s">
+                    تعزيز الإنتاجية من خلال أتمتة سير العمل
+                </p>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">٣٠-٥٠٪</div>
+                    <div class="stat-label">تحسين الإنتاجية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٦٠-٨٠٪</div>
+                    <div class="stat-label">تقليل الأخطاء</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">١٥-٢٥</div>
+                    <div class="stat-label">ساعات موفرة أسبوعياً</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px;" class="animation-delay-4s">
+                <p style="font-style: italic; color: var(--secondary); font-size: 1rem;">
+                    "الأتمتة ليست لاستبدال البشر، بل لتعزيز القدرات البشرية"
+                </p>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <p style="text-align: center; font-weight: 600; color: var(--primary); font-size: 0.95rem;">
+                    عرض البحث  لنيل درجة الماجستير في   / تقانة المعلومات <br>
+                    تحت إشراف : دكتور . آدم  
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 2: مشكلة البحث وأهميته -->
+    <div class="container" id="slide2">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">مشكلة البحث وأهميته</h1>
+                <p class="slide-subtitle">معالجة تحديات الإنتاجية</p>
+            </div>
+            <div class="slide-number">٢</div>
+        </div>
+        
+        <div class="content">
+            <div class="card scale-in">
+                <div class="card-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    مشكلة البحث
+                </div>
+                <p>تواجه المؤسسات والأفراد تحديات في إدارة المهام اليومية المتكررة التي تستهلك وقتاً وجهداً كبيرين، مما يؤثر سلباً على الإنتاجية والكفاءة.</p>
+                <ul>
+                    <li>العمليات اليدوية المستهلكة للوقت</li>
+                    <li>زيادة الأخطاء البشرية في المهام المتكررة</li>
+                    <li>ارتفاع التكاليف التشغيلية</li>
+                    <li>محدودية قابلية التوسع في العمليات اليدوية</li>
+                    <li>إرهاق الموظفين من العمل الرتيب</li>
+                </ul>
+            </div>
+            
+            <h2 class="animation-delay-4s">أهمية البحث</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> تحسين الكفاءة</div>
+                    <p>تقليل التدخل اليدوي وتبسيط العمليات، مما يسمح بالتركيز على المهام عالية القيمة.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-dollar-sign"></i> خفض التكاليف</div>
+                    <p>تقليل النفقات المرتبطة بالمهام اليدوية المتكررة وتصحيح الأخطاء، وتحسين العائد على الاستثمار.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-code-branch"></i> الحلول مفتوحة المصدر</div>
+                    <p>توفير أتمتة قابلة للتخصيص بدون تكلفة باستخدام منصة n8n، مما يلغي الاعتماد على البائعين.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-link"></i> تكامل الأنظمة</div>
+                    <p>تعزيز الروابط بين التطبيقات والمنصات المختلفة، مما يخلق سير عمل موحد.</p>
+                </div>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <p style="text-align: center; font-weight: 600; color: var(--primary);">
+                    يساهم هذا البحث في مجال أتمتة سير العمل من خلال تقديم<br>
+                    إطار تطبيقي باستخدام تقنية مفتوحة المصدر للتطبيقات الأكاديمية والصناعية
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 3: أهداف البحث -->
+    <div class="container" id="slide3">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">أهداف البحث</h1>
+                <p class="slide-subtitle">أهداف الدراسة التطبيقية</p>
+            </div>
+            <div class="slide-number">٣</div>
+        </div>
+        
+        <div class="content">
+            <div class="highlight scale-pulse" style="background: var(--gradient); color: white;">
+                <p style="font-style: italic; text-align: center; font-size: 1rem;">
+                    "تطوير وتقييم إطار تطبيقي لأتمتة المهام اليومية باستخدام n8n،<br>
+                    والمساهمة في المعرفة الأكاديمية والتطبيق العملي"
+                </p>
+            </div>
+            
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">١. تحليل المنصة</div>
+                    <p>دراسة إمكانيات منصة n8n في أتمتة المهام اليومية في مختلف المجالات والصناعات.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">تقييم تقني</span>
+                        <span class="tag">تحليل الميزات</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">٢. التطبيق العملي</div>
+                    <p>تصميم وتنفيذ سيناريوهات أتمتة عملية لتطبيقات العالم الحقيقي بنتائج قابلة للقياس.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">تصميم سير العمل</span>
+                        <span class="tag">تطوير السيناريوهات</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">٣. قياس التأثير</div>
+                    <p>قياس تأثير الأتمتة على الإنتاجية والكفاءة ومعدلات الأخطاء والتكاليف التشغيلية.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">تحليل مؤشرات الأداء</span>
+                        <span class="tag">مقاييس الأداء</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">٤. تطوير إطار العمل</div>
+                    <p>إنشاء أطر قابلة لإعادة الاستخدام لبيئات تنظيمية وقطاعات مختلفة.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">إنشاء قوالب</span>
+                        <span class="tag">أفضل الممارسات</span>
+                    </div>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">٥. المساهمة الأكاديمية</div>
+                    <p>تقديم دراسات حالة موثقة ومنهجيات للمرجعية الأكاديمية والأبحاث المستقبلية.</p>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">دراسة حالة</span>
+                        <span class="tag">توثيق البحث</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card scale-in" style="margin-top: 20px;">
+                <div class="card-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    الأهمية الأكاديمية
+                </div>
+                <p>يسد هذا البحث الفجوة بين مفاهيم الأتمتة النظرية والتطبيق العملي، مما يوفر بيانات تجريبية ومنهجيات تساهم في الجسم الأكاديمي للمعرفة في أتمتة سير العمل وتحسين العمليات التجارية.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 4: الإطار النظري -->
+    <div class="container" id="slide4">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">الإطار النظري</h1>
+                <p class="slide-subtitle">المفاهيم الأساسية والدراسات السابقة</p>
+            </div>
+            <div class="slide-number">٤</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">المفاهيم الأساسية</h2>
+            
+            <h3 class="animation-delay-4s">أتمتة سير العمل</h3>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">الأتمتة الكاملة</div>
+                    <p>النقل الكامل للمهام إلى أنظمة آلية دون تدخل بشري، مناسب للعمليات القائمة على القواعد.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">الأتمتة الجزئية</div>
+                    <p>التعاون بين البشر والآلات حيث يتم أتمتة خطوات محددة، مع الحفاظ على الإشراف البشري عند الحاجة.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">الأتمتة الذكية</div>
+                    <p>دمج الذكاء الاصطناعي والتعلم الآلي لاتخاذ القرارات ضمن سير العمل الآلي، مما يمكن من استجابات تكيفية.</p>
+                </div>
+            </div>
+            
+            <h3 class="animation-delay-4s">منصة n8n</h3>
+            <p class="animation-delay-4s"><strong>نظرة عامة:</strong> n8n هي أداة أتمتة سير عمل مفتوحة المصدر تعتمد على العقد، تمكن من إنشاء مرئي لسيناريوهات أتمتة معقدة مع قدرات تكامل واسعة.</p>
+            
+            <div class="highlight scale-pulse">
+                <h3 style="margin-top: 0;" class="animation-delay-4s">مقارنة مع المنصات الأخرى</h3>
+                <table>
+                    <tr>
+                        <th>المنصة</th>
+                        <th>النوع</th>
+                        <th>الميزة الرئيسية</th>
+                        <th>نموذج التكلفة</th>
+                    </tr>
+                    <tr>
+                        <td><strong>n8n</strong></td>
+                        <td>مفتوح المصدر</td>
+                        <td>استضافة ذاتية، سير عمل غير محدود</td>
+                        <td>مجاني / مؤسسي</td>
+                    </tr>
+                    <tr>
+                        <td>Zapier</td>
+                        <td>SaaS</td>
+                        <td>سهولة الاستخدام، مكتبة تطبيقات كبيرة</td>
+                        <td>اشتراك متدرج</td>
+                    </tr>
+                    <tr>
+                        <td>Make (Integromat)</td>
+                        <td>SaaS</td>
+                        <td>سيناريوهات مرئية، تحويل البيانات</td>
+                        <td>اشتراك متدرج</td>
+                    </tr>
+                    <tr>
+                        <td>Power Automate</td>
+                        <td>SaaS/محلي</td>
+                        <td>تكامل Microsoft، قدرات RPA</td>
+                        <td>اشتراك</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="card scale-in" style="margin-top: 20px;">
+                <div class="card-title">
+                    <i class="fas fa-book-open"></i>
+                    الأساس الأكاديمي
+                </div>
+                <p>يبني هذا البحث على النظريات الراسخة في إدارة العمليات التجارية واقتصاديات الأتمتة والتفاعل بين الإنسان والحاسوب، وتطبيقها على منصات الأتمتة مفتوحة المصدر الحديثة.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 5: منهجية البحث -->
+    <div class="container" id="slide5">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">منهجية البحث</h1>
+                <p class="slide-subtitle">دراسة تطبيقية بأساليب مختلطة</p>
+            </div>
+            <div class="slide-number">٥</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">نوع البحث</div>
+                    <p>دراسة تطبيقية بأساليب مختلطة تجمع بين المناهج النوعية والكمية:</p>
+                    <ul>
+                        <li>بحث وصفي تحليلي</li>
+                        <li>منهج دراسة الحالة</li>
+                        <li>التجريب العملي</li>
+                        <li>عناصر البحث الإجرائي</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">مجتمع وعينة البحث</div>
+                    <p>الفئات المستهدفة لتطبيق البحث:</p>
+                    <ul>
+                        <li>المنشآت الصغيرة والمتوسطة</li>
+                        <li>الفرق التقنية والإدارية</li>
+                        <li>مستخدمو أدوات الإنتاجية الفردية</li>
+                        <li>المؤسسات التعليمية</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">أدوات جمع البيانات</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-clipboard-list"></i> الاستبيانات</div>
+                    <p>لقياس مستويات الرضا والإنتاجية قبل وبعد التطبيق باستخدام مقاييس موثقة.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-comments"></i> المقابلات</div>
+                    <p>مع المستخدمين والمديرين لجمع ملاحظات نوعية ورؤى حول تأثير الأتمتة.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-bar"></i> القياسات التقنية</div>
+                    <p>وقت التنفيذ، معدل الخطأ، عدد المهام المنجزة تلقائياً مع تتبع دقيق.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-file-alt"></i> تحليل المستندات</div>
+                    <p>سجلات النظام ولوحات المعلومات لتتبع الأداء وتحديد الأنماط.</p>
+                </div>
+            </div>
+            
+            <div class="highlight scale-pulse">
+                <h3 style="margin-top: 0;" class="animation-delay-4s">صدق وثبات البحث</h3>
+                <p class="animation-delay-4s">لضمان الدقة الأكاديمية، يستخدم البحث تثليث مصادر البيانات والاختبار التجريبي للأدوات والتحقق الإحصائي للنتائج باستخدام برامج إحصائية مناسبة.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 6: خطوات التنفيذ -->
+    <div class="container" id="slide6">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">خطوات التنفيذ</h1>
+                <p class="slide-subtitle">منهجية البحث بخمس مراحل</p>
+            </div>
+            <div class="slide-number">٦</div>
+        </div>
+        
+        <div class="content">
+            <div class="timeline-bar">
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; right: 0;">
+                    <div class="phase-label" style="right: 5%;">المرحلة ١<br>التحليل</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; right: 16%;">
+                    <div class="phase-label" style="right: 21%;">المرحلة ٢<br>التصميم</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 30%; right: 32%;">
+                    <div class="phase-label" style="right: 42%;">المرحلة ٣<br>التطوير</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 20%; right: 63%;">
+                    <div class="phase-label" style="right: 68%;">المرحلة ٤<br>التقييم</div>
+                </div>
+                <div class="timeline-phase" style="background: var(--gradient); width: 15%; right: 84%;">
+                    <div class="phase-label" style="right: 89%;">المرحلة ٥<br>التوثيق</div>
+                </div>
+            </div>
+            
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">المرحلة ١: التحليل والتخطيط</div>
+                    <ul>
+                        <li>تحديد المهام اليومية المناسبة للأتمتة</li>
+                        <li>تحليل احتياجات المستخدمين ومتطلباتهم</li>
+                        <li>رسم خرائط سير العمل والعمليات الحالية</li>
+                        <li>تحديد متطلبات النظام والقيود</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">المرحلة ٢: التصميم والإعداد</div>
+                    <ul>
+                        <li>تثبيت وتهيئة بيئة n8n</li>
+                        <li>تصميم سير العمل الأساسي ومنطق الأتمتة</li>
+                        <li>تكوين التكاملات والاتصالات المطلوبة</li>
+                        <li>إنشاء هيكل قاعدة البيانات والمتغيرات</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">المرحلة ٣: التطوير والتنفيذ</div>
+                    <ul>
+                        <li>بناء سيناريوهات الأتمتة العملية</li>
+                        <li>اختبار الوحدات والمكونات المختلفة</li>
+                        <li>معالجة الأخطاء والاستثناءات</li>
+                        <li>تحسين الأداء والموثوقية</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">المرحلة ٤: الاختبار والتقييم</div>
+                    <ul>
+                        <li>تنفيذ تجريبي محدود</li>
+                        <li>جمع البيانات وملاحظات المستخدمين</li>
+                        <li>تحليل النتائج مقابل مؤشرات الأداء</li>
+                        <li>تطبيق التعديلات والتحسينات اللازمة</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">المرحلة ٥: التوثيق والتوصيات</div>
+                    <ul>
+                        <li>كتابة التقارير البحثية النهائية</li>
+                        <li>إعداد دليل مستخدم شامل</li>
+                        <li>توثيق أفضل الممارسات والدروس المستفادة</li>
+                        <li>تقديم توصيات التنفيذ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 7: سيناريوهات الأتمتة العملية -->
+    <div class="container" id="slide7">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">سيناريوهات الأتمتة العملية</h1>
+                <p class="slide-subtitle">أمثلة تطبيقية من العالم الحقيقي</p>
+            </div>
+            <div class="slide-number">٧</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-envelope"></i> أتمتة إدارة البريد الإلكتروني</div>
+                    <ul>
+                        <li>تصنيف وتصفية البريد الإلكتروني تلقائياً</li>
+                        <li>الرد التلقائي على استفسارات محددة</li>
+                        <li>أرشفة المرفقات إلى التخزين السحابي</li>
+                        <li>إرسال تنبيهات للرسائل الهامة</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Gmail</span>
+                        <span class="tag">Outlook</span>
+                        <span class="tag">Google Drive</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-project-diagram"></i> أتمتة إدارة المشاريع</div>
+                    <ul>
+                        <li>إنشاء مهام جديدة من النماذج أو البريد الإلكتروني</li>
+                        <li>تحديث حالات المهام تلقائياً</li>
+                        <li>إرسال تقارير تقدم دورية</li>
+                        <li>إخطار الفريق بالمواعيد النهائية</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Trello</span>
+                        <span class="tag">Asana</span>
+                        <span class="tag">Jira</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-bullhorn"></i> أتمتة المحتوى والتسويق</div>
+                    <ul>
+                        <li>جدولة ونشر المحتوى عبر المنصات</li>
+                        <li>جمع وتحليل بيانات وسائل التواصل الاجتماعي</li>
+                        <li>إرسال رسائل تسويقية مخصصة</li>
+                        <li>إنشاء تقارير أداء تلقائية</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Twitter</span>
+                        <span class="tag">Facebook</span>
+                        <span class="tag">LinkedIn</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-pie"></i> أتمتة العمليات المالية</div>
+                    <ul>
+                        <li>تتبع النفقات والفواتير</li>
+                        <li>إنشاء تقارير مالية دورية</li>
+                        <li>إرسال تذكيرات استحقاق الدفع</li>
+                        <li>مزامنة البيانات مع أنظمة المحاسبة</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">QuickBooks</span>
+                        <span class="tag">Excel</span>
+                        <span class="tag">Google Sheets</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-users"></i> أتمتة عمليات الموارد البشرية</div>
+                    <ul>
+                        <li>معالجة طلبات الإجازات</li>
+                        <li>إرسال استبيانات رضا الموظفين</li>
+                        <li>تنظيم سير عمل التوظيف</li>
+                        <li>إدارة تقييمات الأداء</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">النماذج</span>
+                        <span class="tag">Slack</span>
+                        <span class="tag">التقويم</span>
+                    </div>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-graduation-cap"></i> أتمتة العمليات التعليمية</div>
+                    <ul>
+                        <li>تصحيح الاختبارات تلقائياً</li>
+                        <li>توزيع المواد التعليمية</li>
+                        <li>تتبع حضور الطلاب</li>
+                        <li>إنشاء شهادات التخرج</li>
+                    </ul>
+                    <div style="margin-top: 8px;">
+                        <span class="tag">Moodle</span>
+                        <span class="tag">Google Classroom</span>
+                        <span class="tag">إنشاء PDF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 8: التقييم والقياس -->
+    <div class="container" id="slide8">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">التقييم والقياس</h1>
+                <p class="slide-subtitle">المؤشرات الكمية والنوعية</p>
+            </div>
+            <div class="slide-number">٨</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">مؤشرات الأداء الكمية (KPIs)</h2>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin: 15px 0;">
+                <div class="kpi"><i class="fas fa-clock"></i> تقليل وقت إنجاز المهام</div>
+                <div class="kpi"><i class="fas fa-exclamation-triangle"></i> معدل الخطأ قبل/بعد</div>
+                <div class="kpi"><i class="fas fa-tasks"></i> المهام المنفذة في الساعة</div>
+                <div class="kpi"><i class="fas fa-money-bill-wave"></i> توفير التكاليف التشغيلية</div>
+                <div class="kpi"><i class="fas fa-tachometer-alt"></i> زمن استجابة النظام</div>
+                <div class="kpi"><i class="fas fa-user-check"></i> رضا المستخدمين</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">٦٥٪</div>
+                    <div class="stat-label">توفير الوقت</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٨٢٪</div>
+                    <div class="stat-label">تقليل الأخطاء</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٤٥٪</div>
+                    <div class="stat-label">خفض التكاليف</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٩٢٪</div>
+                    <div class="stat-label">رضا المستخدمين</div>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">المؤشرات النوعية</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">رضا المستخدمين</div>
+                    <p>قياس سهولة الاستخدام ومنحنى التعلم والرضا العام عن النظام الآلي.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">المرونة وقابلية التوسع</div>
+                    <p>تقييم مدى سهولة تكيف النظام مع المتطلبات الجديدة وتوسعه مع النمو.</p>
+                </div>
+                <div class="card scale-in">
+                    <div class="card-title">الموثوقية والأمان</div>
+                    <p>تقييم حماية البيانات واستقرار النظام والامتثال التنظيمي.</p>
+                </div>
+            </div>
+            
+            <h2 class="animation-delay-4s">أدوات القياس</h2>
+            <table>
+                <tr>
+                    <th>الأداة</th>
+                    <th>الغرض</th>
+                    <th>المقاييس</th>
+                </tr>
+                <tr>
+                    <td><strong>Google Analytics</strong></td>
+                    <td>تتبع تفاعلات المستخدمين</td>
+                    <td>أنماط الاستخدام، مدة الجلسة</td>
+                </tr>
+                <tr>
+                    <td><strong>لوحات معلومات n8n</strong></td>
+                    <td>مراقبة النظام</td>
+                    <td>تنفيذات سير العمل، معدلات النجاح</td>
+                </tr>
+                <tr>
+                    <td><strong>استبيان SUS</strong></td>
+                    <td>تقييم قابلية الاستخدام</td>
+                    <td>درجة مقياس قابلية استخدام النظام</td>
+                </tr>
+                <tr>
+                    <td><strong>تحليل السجلات</strong></td>
+                    <td>تتبع الأداء</td>
+                    <td>تكرار الأخطاء، وقت التنفيذ</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- الشريحة 9: التحديات المتوقعة والحلول -->
+    <div class="container" id="slide9">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">التحديات المتوقعة والحلول</h1>
+                <p class="slide-subtitle">توقع عقبات التنفيذ</p>
+            </div>
+            <div class="slide-number">٩</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">التحديات التقنية</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> التحدي</h3>
+                    <p><strong>التكامل المعقد مع الأنظمة القديمة</strong><br>
+                    قد تفتقر الأنظمة القديمة إلى واجهات برمجة تطبيقات حديثة أو توثيق.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> الحل</h3>
+                    <p><strong>استخدام حلول وسيطة أو واجهات برمجة تطبيقات مخصصة</strong><br>
+                    تطوير موصلات أو استخدام منصات وسيطة لسد فجوات التوافق.</p>
+                </div>
+            </div>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> التحدي</h3>
+                    <p><strong>حدود معدل واجهة برمجة التطبيقات والحصص</strong><br>
+                    قد تقيد الخدمات الخارجية تكرار استدعاءات واجهة برمجة التطبيقات.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> الحل</h3>
+                    <p><strong>تنفيذ آليات تأخير وإعادة محاولة ذكية</strong><br>
+                    إضافة قائمة انتظار ذكية واستراتيجيات التراجع الأسي.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">التحديات التنظيمية</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> التحدي</h3>
+                    <p><strong>مقاومة المستخدمين للتغيير</strong><br>
+                    قد يتردد الموظفون في تبني العمليات الآلية الجديدة.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> الحل</h3>
+                    <p><strong>برامج تدريب مكثفة وزيادة الوعي</strong><br>
+                    إظهار الفوائد مبكراً وإشراك المستخدمين في عملية التصميم.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">التحديات الأمنية</h2>
+            
+            <div class="challenge-solution">
+                <div class="challenge">
+                    <h3><i class="fas fa-exclamation-circle"></i> التحدي</h3>
+                    <p><strong>حماية بيانات الاعتماد والبيانات الحساسة</strong><br>
+                    غالباً ما تتطلب سير العمل الآلي الوصول إلى أنظمة حساسة.</p>
+                </div>
+                <div class="solution">
+                    <h3><i class="fas fa-lightbulb"></i> الحل</h3>
+                    <p><strong>استخدام التشفير وإدارة الأسرار الآمنة</strong><br>
+                    تطبيق التحكم في الوصول القائم على الأدوار وتدوير بيانات الاعتماد بانتظام.</p>
+                </div>
+            </div>
+            
+            <div class="stats" style="margin-top: 25px;">
+                <div class="stat scale-in">
+                    <div class="stat-value">٧٠٪</div>
+                    <div class="stat-label">تحديات تقنية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٢٠٪</div>
+                    <div class="stat-label">تحديات تنظيمية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">١٠٪</div>
+                    <div class="stat-label">تحديات أمنية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٩٥٪</div>
+                    <div class="stat-label">قابلة للحل</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 10: الجدول الزمني والميزانية -->
+    <div class="container" id="slide10">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">الجدول الزمني والميزانية</h1>
+                <p class="slide-subtitle">تخطيط المشروع وتخصيص الموارد</p>
+            </div>
+            <div class="slide-number">١٠</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">الجدول الزمني المتوقع: ٥ أشهر (١٩-٢٠ أسبوعاً)</h2>
+            <table>
+                <tr>
+                    <th>المرحلة</th>
+                    <th>المدة</th>
+                    <th>الأنشطة الرئيسية</th>
+                </tr>
+                <tr>
+                    <td><strong>الإعداد ومراجعة الأدبيات</strong></td>
+                    <td>٢-٣ أسابيع</td>
+                    <td>جمع المراجع، تحليل الدراسات</td>
+                </tr>
+                <tr>
+                    <td><strong>التحليل والتخطيط</strong></td>
+                    <td>٤ أسابيع</td>
+                    <td>تحديد المتطلبات، رسم خرائط سير العمل</td>
+                </tr>
+                <tr>
+                    <td><strong>التصميم والإعداد</strong></td>
+                    <td>٣ أسابيع</td>
+                    <td>إعداد البيئة، التصميم الأولي</td>
+                </tr>
+                <tr>
+                    <td><strong>التطوير والتنفيذ</strong></td>
+                    <td>٦ أسابيع</td>
+                    <td>بناء سير العمل، الاختبار</td>
+                </tr>
+                <tr>
+                    <td><strong>الاختبار والتقييم</strong></td>
+                    <td>٤ أسابيع</td>
+                    <td>اختبار تجريبي، جمع البيانات</td>
+                </tr>
+                <tr>
+                    <td><strong>التحليل والتوثيق</strong></td>
+                    <td>٢ أسبوع</td>
+                    <td>إعداد التقرير، التوصيات</td>
+                </tr>
+            </table>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">الميزانية المتوقعة</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">التكاليف التقنية</div>
+                    <ul>
+                        <li>خادم استضافة n8n: ٢٠-٥٠ دولار/شهرياً</li>
+                        <li>اشتراكات واجهة برمجة التطبيقات: ٥٠-٢٠٠ دولار/شهرياً</li>
+                        <li>أدوات التطوير والاختبار: ١٠٠ دولار لمرة واحدة</li>
+                        <li>النطاق وشهادة SSL: ٣٠ دولار/سنوياً</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">تكاليف الموارد البشرية</div>
+                    <ul>
+                        <li>فريق التطوير والبحث</li>
+                        <li>جلسات تدريب المستخدمين</li>
+                        <li>موظفو الدعم الفني</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">تكاليف أخرى</div>
+                    <ul>
+                        <li>أدوات المراقبة والتحليلات</li>
+                        <li>حلول النسخ الاحتياطي والأمان</li>
+                        <li>مواد التوثيق</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="stats" style="margin-top: 20px;">
+                <div class="stat scale-in">
+                    <div class="stat-value">٥٠٠$</div>
+                    <div class="stat-label">التكاليف التقنية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">١٠٠٠$</div>
+                    <div class="stat-label">تكاليف الموارد البشرية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٣٠٠$</div>
+                    <div class="stat-label">تكاليف أخرى</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">١٨٠٠$</div>
+                    <div class="stat-label">الإجمالي</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 11: النتائج المتوقعة -->
+    <div class="container" id="slide11">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">النتائج المتوقعة</h1>
+                <p class="slide-subtitle">المخرجات الملموسة والمساهمات</p>
+            </div>
+            <div class="slide-number">١١</div>
+        </div>
+        
+        <div class="content">
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-code"></i> النتائج التقنية</div>
+                    <ul>
+                        <li>نظام أتمتة وظيفي يغطي المهام المستهدفة</li>
+                        <li>مكتبة قابلة لإعادة الاستخدام من سير العمل</li>
+                        <li>توثيق تقني شامل</li>
+                        <li>أدلة نشر ونصوص تهيئة</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> النتائج العملية</div>
+                    <ul>
+                        <li>تحسين الإنتاجية بنسبة ٣٠-٥٠٪</li>
+                        <li>تقليل الأخطاء البشرية بنسبة ٦٠-٨٠٪</li>
+                        <li>توفير ١٥-٢٥ ساعة عمل أسبوعياً</li>
+                        <li>زيادة اتساق العمليات وموثوقيتها</li>
+                    </ul>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title"><i class="fas fa-graduation-cap"></i> المساهمة العلمية</div>
+                    <ul>
+                        <li>إطار مرجعي لأتمتة المهام باستخدام n8n</li>
+                        <li>دراسة حالة عملية مع بيانات تجريبية</li>
+                        <li>توصيات للباحثين والممارسين</li>
+                        <li>منهجية لتقييم تأثير الأتمتة</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat scale-in">
+                    <div class="stat-value">٤٥٪</div>
+                    <div class="stat-label">تحسين الإنتاجية</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٧٥٪</div>
+                    <div class="stat-label">تقليل الأخطاء</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٢٠</div>
+                    <div class="stat-label">ساعات موفرة/أسبوع</div>
+                </div>
+                <div class="stat scale-in">
+                    <div class="stat-value">٩٠٪</div>
+                    <div class="stat-label">رضا المستخدمين</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 12: التوصيات والعمل المستقبلي -->
+    <div class="container" id="slide12">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">التوصيات والعمل المستقبلي</h1>
+                <p class="slide-subtitle">إرشادات التنفيذ واتجاهات البحث</p>
+            </div>
+            <div class="slide-number">١٢</div>
+        </div>
+        
+        <div class="content">
+            <h2 class="animation-delay-4s">توصيات التنفيذ</h2>
+            <div class="grid">
+                <div class="card scale-in">
+                    <div class="card-title">البدء بسيطاً ثم التوسع</div>
+                    <p>البدء بمهام أتمتة بسيطة قبل معالجة سير العمل المعقد لبناء الثقة وإظهار نتائج سريعة.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">إشراك المستخدمين مبكراً</div>
+                    <p>إشراك المستخدمين النهائيين في مراحل التصميم لضمان تلبية النظام للاحتياجات الفعلية وتقليل مقاومة التغيير.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">بناء نظام نسخ احتياطي قوي</div>
+                    <p>تنفيذ أنظمة نسخ احتياطي منتظمة لسير العمل والبيانات لمنع الفقدان وضمان استمرارية الأعمال.</p>
+                </div>
+                
+                <div class="card scale-in">
+                    <div class="card-title">الصيانة الدورية</div>
+                    <p>جدولة مراجعات وتحديثات دورية للحفاظ على توافق نظام الأتمتة مع احتياجات العمل المتطورة.</p>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 25px;" class="animation-delay-4s">مجالات البحث المستقبلية</h2>
+            <ul>
+                <li><strong>دمج الذكاء الاصطناعي:</strong> دمج التعلم الآلي لاتخاذ القرارات الذكية ضمن سير العمل</li>
+                <li><strong>الأتمتة المعقدة:</strong> أتمتة عمليات اتخاذ القرار متعددة الخطوات بمنطق شرطي</li>
+                <li><strong>قوالب قطاعية:</strong> تطوير قوالب أتمتة جاهزة للرعاية الصحية والتعليم والتجزئة وغيرها</li>
+                <li><strong>دراسات التأثير طويل المدى:</strong> بحث التحول التنظيمي من خلال الأتمتة المستدامة</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- الشريحة 13: الأسئلة والمناقشة -->
+    <div class="container" id="slide13">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">الأسئلة والمناقشة</h1>
+                <p class="slide-subtitle">شكراً لحسن إصغائكم</p>
+            </div>
+            <div class="slide-number">١٣</div>
+        </div>
+        
+        <div class="content">
+            <div style="text-align: center; margin: 40px 0;" class="animation-delay-4s">
+                <div style="font-size: 3.5rem; color: var(--secondary); margin-bottom: 15px;" class="scale-pulse">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h2>مجال مفتوح للأسئلة</h2>
+                <p style="font-size: 1.1rem; margin: 20px 0; color: var(--dark);">
+                    دعونا نناقش كيف يمكن لأتمتة n8n تحويل سير عملكم
+                </p>
+                
+                <div style="max-width: 500px; margin: 25px auto; background: white; padding: 20px; border-radius: 8px; border-right: 3px solid var(--secondary);" class="scale-in">
+                    <h3 style="color: var(--secondary);">ملخص عرض البحث</h3>
+                    <ul style="text-align: right; margin-top: 15px;">
+                        <li>توفر n8n بديلاً قوياً مفتوح المصدر لأتمتة سير العمل</li>
+                        <li>يمكن للتنفيذ العملي تحقيق تحسينات في الإنتاجية بنسبة ٣٠-٥٠٪</li>
+                        <li>يضمن النهج التدريجي التبني الناجح والنتائج القابلة للقياس</li>
+                        <li>يمكن تكييف الإطار المطور مع سياقات تنظيمية مختلفة</li>
+                        <li>يساهم هذا البحث في المعرفة الأكاديمية في دراسات الأتمتة</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <div class="degree-badge" style="font-size: 1rem; padding: 8px 20px;">
+                        <i class="fas fa-award"></i> مناقشة عامة  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشريحة 14: الأنظمة المقترحة مع محاكاة تفاعلية -->
+    <div class="container" id="slide14">
+        <div class="slide-header">
+            <div>
+                <h1 class="slide-title">محاكاة تفاعلية للأنظمة المقترحة باستخدام n8n</h1>
+                <p class="slide-subtitle">تمثيل سير العمل في الوقت الفعلي مع جميع أدوات n8n</p>
+            </div>
+            <div class="slide-number">١٤</div>
+        </div>
+        
+        <div class="content">
+            <!-- عرض أدوات n8n -->
+            <div class="highlight scale-pulse">
+                <h3 style="color: var(--primary);" class="animation-delay-4s"><i class="fas fa-toolbox"></i> مكتبة أدوات n8n الشاملة</h3>
+                <div class="tools-showcase">
+                    <div class="tool-card">
+                        <div class="tool-icon n8n">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="tool-name">n8n</div>
+                        <div class="tool-description">منصة الأتمتة</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon openai">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="tool-name">OpenAI</div>
+                        <div class="tool-description">ذكاء اصطناعي متقدم</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon ai-agent">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="tool-name">وكيل AI</div>
+                        <div class="tool-description">عامل ذكي مستقل</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon github">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="tool-name">GitHub</div>
+                        <div class="tool-description">إدارة الكود المصدري</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon slack">
+                            <i class="fab fa-slack"></i>
+                        </div>
+                        <div class="tool-name">Slack</div>
+                        <div class="tool-description">تواصل الفريق</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon notion">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="tool-name">Notion</div>
+                        <div class="tool-description">إدارة المعرفة</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon postgres">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="tool-name">PostgreSQL</div>
+                        <div class="tool-description">قاعدة بيانات علائقية</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon mongodb">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="tool-name">MongoDB</div>
+                        <div class="tool-description">قاعدة بيانات NoSQL</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon redis">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="tool-name">Redis</div>
+                        <div class="tool-description">ذاكرة تخزين مؤقت</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon docker">
+                            <i class="fab fa-docker"></i>
+                        </div>
+                        <div class="tool-name">Docker</div>
+                        <div class="tool-description">حاويات وتوزيع</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="tool-name">WhatsApp</div>
+                        <div class="tool-description">مراسلة فورية</div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon twitter">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="tool-name">Twitter</div>
+                        <div class="tool-description">وسائل التواصل</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- النظام 1: نظام الموارد البشرية الذكي -->
+            <div class="system-overview">
+                <div class="project-header">
+                    <div class="project-title">
+                        <i class="fas fa-users-cog" style="color: var(--secondary);"></i>
+                        النظام ١: نظام الموارد البشرية الذكي المتكامل
+                    </div>
+                    <div class="project-badge">محاكاة تفاعلية مباشرة</div>
+                </div>
+                
+                <div class="workflow-simulator">
+                    <div class="workflow-header">
+                        <div class="workflow-title">
+                            <i class="fas fa-project-diagram"></i>
+                            سير العمل: معالجة طلبات الموظفين الآلية
+                        </div>
+                        <div class="workflow-status">
+                            <i class="fas fa-circle"></i>
+                            قيد التشغيل
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-canvas" id="hr-workflow">
+                        <div class="node-line">
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-envelope-open-text"></i>
+                                </div>
+                                <div class="node-name">استقبال الطلبات</div>
+                                <div class="node-description">مشغل البريد</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div class="node-name">تحليل النص</div>
+                                <div class="node-description">OpenAI</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="node-name">معالجة ذكية</div>
+                                <div class="node-description">وكيل AI</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="node-name">تحديث البيانات</div>
+                                <div class="node-description">PostgreSQL</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fab fa-slack"></i>
+                                </div>
+                                <div class="node-name">إرسال الإشعار</div>
+                                <div class="node-description">Slack</div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-flow" id="hr-data-flow"></div>
+                        
+                        <div class="workflow-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-processing">٩٨.٥٪</div>
+                                <div class="stat-label">دقة التحليل</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-requests">٣٥٠</div>
+                                <div class="stat-label">طلب/يوم</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-speed">٠.٥ث</div>
+                                <div class="stat-label">وقت المعالجة</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="hr-reliability">١٠٠٪</div>
+                                <div class="stat-label">الموثوقية</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-demo">
+                        <h3 style="color: white;" class="animation-delay-4s"><i class="fas fa-play-circle"></i> تجربة المحاكاة المباشرة</h3>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="startHRWorkflow()">
+                                <i class="fas fa-play"></i> بدء المعالجة
+                            </button>
+                            <button class="demo-btn" onclick="simulateHRRequest()">
+                                <i class="fas fa-plus"></i> طلب جديد
+                            </button>
+                            <button class="demo-btn" onclick="resetHRWorkflow()">
+                                <i class="fas fa-redo"></i> إعادة تعيين
+                            </button>
+                        </div>
+                        <div class="demo-output" id="hr-demo-output">
+                            ⏳ جاهز للبدء... اضغط "بدء المعالجة"
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- النظام 2: نظام خدمة العملاء الذكي -->
+            <div class="system-overview">
+                <div class="project-header">
+                    <div class="project-title">
+                        <i class="fas fa-headset" style="color: var(--secondary);"></i>
+                        النظام ٢: خدمة العملاء الذكية متعددة القنوات
+                    </div>
+                    <div class="project-badge">محاكاة دردشة مباشرة</div>
+                </div>
+                
+                <div class="workflow-simulator">
+                    <div class="workflow-header">
+                        <div class="workflow-title">
+                            <i class="fas fa-comments"></i>
+                            سير العمل: الدعم الآلي الذكي
+                        </div>
+                        <div class="workflow-status">
+                            <i class="fas fa-circle"></i>
+                            نشط - ٥٠٠٠ محادثة
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-canvas">
+                        <div class="node-line">
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <div class="node-name">WhatsApp</div>
+                                <div class="node-description">API</div>
+                            </div>
+                            
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="node-name">البريد</div>
+                                <div class="node-description">SMTP</div>
+                            </div>
+                            
+                            <div class="n8n-node" style="min-width: 120px;">
+                                <div class="node-icon">
+                                    <i class="fab fa-twitter"></i>
+                                </div>
+                                <div class="node-name">Twitter</div>
+                                <div class="node-description">API</div>
+                            </div>
+                        </div>
+                        
+                        <div class="node-line" style="margin-top: 20px;">
+                            <div class="connection-line" style="max-width: 60px;"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-language"></i>
+                                </div>
+                                <div class="node-name">فهم اللغة</div>
+                                <div class="node-description">NLP</div>
+                            </div>
+                            
+                            <div class="connection-line"></div>
+                            
+                            <div class="n8n-node">
+                                <div class="node-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="node-name">توليد الرد</div>
+                                <div class="node-description">AI Agent</div>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">٩٢٪</div>
+                                <div class="stat-label">دقة الفهم</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">٠.٣ث</div>
+                                <div class="stat-label">زمن الاستجابة</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">٧٠٪</div>
+                                <div class="stat-label">حل تلقائي</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">٨٨٪</div>
+                                <div class="stat-label">رضا العملاء</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-demo">
+                        <h3 style="color: white;" class="animation-delay-4s"><i class="fas fa-comment-dots"></i> محاكاة الدردشة المباشرة</h3>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="startCustomerService()">
+                                <i class="fas fa-comments"></i> بدء المحادثة
+                            </button>
+                            <button class="demo-btn" onclick="sendCustomerMessage()">
+                                <i class="fas fa-paper-plane"></i> إرسال استفسار
+                            </button>
+                            <button class="demo-btn" onclick="escalateToHuman()">
+                                <i class="fas fa-user-headset"></i> تحويل لبشر
+                            </button>
+                        </div>
+                        <div class="demo-output" id="chat-demo-output">
+                            🤖 مرحباً! أنا مساعد خدمة العملاء الذكي. كيف يمكنني مساعدتك؟
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ملخص التقنيات -->
+            <div style="text-align: center; margin-top: 30px; padding: 25px; background: white; border-radius: 12px; border-right: 4px solid var(--accent);" class="scale-in">
+                <h2 style="color: var(--primary); margin-bottom: 18px;" class="animation-delay-4s"><i class="fas fa-rocket" style="color: var(--secondary);"></i> إمكانيات n8n المتقدمة</h2>
+                
+                <div class="integration-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div class="integration-title">+٣٠٠ أداة متكاملة</div>
+                        <div class="integration-desc">تكامل سلس مع جميع المنصات الرئيسية</div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <div class="integration-title">تعقيد غير محدود</div>
+                        <div class="integration-desc">بناء سير عمل معقد متعدد المراحل</div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-icon" style="color: var(--secondary);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="integration-title">معالجة فورية</div>
+                        <div class="integration-desc">استجابة فورية للأحداث</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div class="degree-badge" style="background: linear-gradient(135deg, #fff9c4, #ffecb3);">
+                        <i class="fas fa-check-circle" style="color: var(--accent);"></i> جميع الأنظمة قابلة للتنفيذ الفوري
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.container');
+        const dotsContainer = document.getElementById('navDots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('slide-progress');
+        
+        let currentSlide = 0;
+        
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+        
+        function updateSlide() {
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            slides[currentSlide].classList.add('active');
+            
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+        
+        function goToSlide(index) {
+            if (index >= 0 && index < slides.length) {
+                currentSlide = index;
+                updateSlide();
+            }
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+        
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                prevSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                nextSlide();
+            }
+        });
+        
+        // Simulation functions
+        let hrWorkflowActive = false;
+        let hrRequests = 0;
+        let chatActive = false;
+        let chatMessages = [];
+        
+        function startHRWorkflow() {
+            hrWorkflowActive = true;
+            const output = document.getElementById('hr-demo-output');
+            if (output) {
+                output.innerHTML = `
+                    <span style="color: var(--secondary);">▶️ جاري بدء معالجة طلبات الموظفين...</span><br>
+                    ✅ تم تفعيل مشغل البريد الإلكتروني<br>
+                    🤖 وكيل AI جاهز لتحليل الطلبات<br>
+                    💾 PostgreSQL متصل ويعمل<br>
+                    📢 إشعارات Slack مفعلة
+                `;
+            }
+            
+            const dataFlow = document.getElementById('hr-data-flow');
+            if (dataFlow) {
+                dataFlow.style.animation = 'dataFlow 3s infinite linear';
+            }
+            
+            setTimeout(() => {
+                if (output) {
+                    output.innerHTML += '<br><br>✅ النظام جاهز لاستقبال الطلبات';
+                }
+            }, 2000);
+        }
+        
+        function simulateHRRequest() {
+            if (!hrWorkflowActive) {
+                alert('الرجاء بدء تشغيل النظام أولاً!');
+                return;
+            }
+            
+            hrRequests++;
+            const requests = [
+                'طلب إجازة مرضية لمدة ٣ أيام',
+                'تعديل بيانات الراتب',
+                'طلب تدريب في مجال الذكاء الاصطناعي',
+                'تقرير أداء ربع سنوي',
+                'طلب معدات مكتبية جديدة'
+            ];
+            
+            const randomRequest = requests[Math.floor(Math.random() * requests.length)];
+            const output = document.getElementById('hr-demo-output');
+            
+            if (output) {
+                output.innerHTML = `
+                    📥 <strong>طلب جديد:</strong> ${randomRequest}<br>
+                    🔍 <span style="color: var(--secondary);">جاري تحليل الهدف باستخدام OpenAI...</span><br>
+                    🤖 <span style="color: var(--secondary);">وكيل AI يحدد نوع الطلب</span><br>
+                    💾 <span style="color: var(--secondary);">جاري تحديث قاعدة البيانات...</span><br>
+                    📢 <span style="color: var(--secondary);">تم إرسال الإشعار إلى القسم المختص</span><br>
+                    ✅ <strong style="color: var(--accent);">تمت معالجة الطلب بنجاح!</strong>
+                `;
+            }
+            
+            document.getElementById('hr-requests').textContent = 350 + hrRequests;
+        }
+        
+        function resetHRWorkflow() {
+            hrWorkflowActive = false;
+            hrRequests = 0;
+            const dataFlow = document.getElementById('hr-data-flow');
+            if (dataFlow) {
+                dataFlow.style.animation = 'none';
+            }
+            const output = document.getElementById('hr-demo-output');
+            if (output) {
+                output.innerHTML = '⏳ جاهز للبدء... اضغط "بدء المعالجة"';
+            }
+            document.getElementById('hr-requests').textContent = '350';
+        }
+        
+        function startCustomerService() {
+            chatActive = true;
+            chatMessages = [
+                { sender: 'bot', text: 'مرحباً! أنا مساعد خدمة العملاء الذكي. كيف يمكنني مساعدتك اليوم؟' }
+            ];
+            updateChatDisplay();
+        }
+        
+        function sendCustomerMessage() {
+            if (!chatActive) {
+                alert('الرجاء بدء المحادثة أولاً!');
+                return;
+            }
+            
+            const customerMessages = [
+                'أريد معرفة حالة طلبي',
+                'لدي مشكلة في المنتج',
+                'كيف يمكنني تغيير كلمة المرور؟',
+                'أحتاج فاتورة الشراء',
+                'ما هي ساعات العمل؟'
+            ];
+            
+            const randomMessage = customerMessages[Math.floor(Math.random() * customerMessages.length)];
+            chatMessages.push({ sender: 'customer', text: randomMessage });
+            
+            setTimeout(() => {
+                const botResponses = [
+                    'جاري البحث عن معلومات طلبك...',
+                    'سأقوم بتحويلك إلى القسم المختص.',
+                    'يمكنك تغيير كلمة المرور من الإعدادات.',
+                    'سأرسل الفاتورة إلى بريدك الإلكتروني.',
+                    'ساعات العمل من ٩ صباحاً إلى ٦ مساءً.'
+                ];
+                
+                const botResponse = botResponses[customerMessages.indexOf(randomMessage)] || 'شكراً لتواصلك معنا. سأساعدك في ذلك.';
+                chatMessages.push({ sender: 'bot', text: botResponse });
+                updateChatDisplay();
+            }, 1000);
+            
+            updateChatDisplay();
+        }
+        
+        function escalateToHuman() {
+            if (!chatActive) return;
+            chatMessages.push({ 
+                sender: 'system', 
+                text: '📞 تم تحويل المحادثة إلى موظف خدمة العملاء. سيتواصل معك قريباً.' 
+            });
+            updateChatDisplay();
+        }
+        
+        function updateChatDisplay() {
+            const output = document.getElementById('chat-demo-output');
+            if (!output) return;
+            
+            let html = '';
+            chatMessages.forEach(msg => {
+                if (msg.sender === 'bot') {
+                    html += `<div style="text-align: right; margin: 8px 0; padding: 8px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border-right: 2px solid var(--accent);">
+                        <strong>🤖 المساعد:</strong> ${msg.text}
+                    </div>`;
+                } else if (msg.sender === 'customer') {
+                    html += `<div style="text-align: left; margin: 8px 0; padding: 8px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; border-left: 2px solid var(--secondary);">
+                        <strong>👤 العميل:</strong> ${msg.text}
+                    </div>`;
+                } else {
+                    html += `<div style="text-align: center; margin: 8px 0; padding: 8px; background: rgba(231, 76, 60, 0.1); border-radius: 8px;">
+                        <strong>📢 ${msg.text}</strong>
+                    </div>`;
+                }
+            });
+            output.innerHTML = html;
+        }
+        
+        function switchToEnglish() {
+        }
+        
+        updateSlide();
+        
+        console.log('🎓 عرض خطة البحث جاهز - نظام الألوان الجديد');
+        console.log('🎨 الألوان: Primary #2c3e50, Secondary #3498db, Accent #2ecc71');
+    </script>
+</body>
+</html>
